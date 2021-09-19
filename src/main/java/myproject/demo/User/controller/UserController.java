@@ -24,6 +24,14 @@ public class UserController {
         return ResponseEntity.ok(new LoginResponse(token));
     }
 
+    @PostMapping("/token/refresh")
+    public ResponseEntity<Token> refresh (@RequestBody RefreshTokenPayload refreshTokenPayLoad){
+        return ResponseEntity.ok(refresh(refreshTokenPayLoad.refreshToken));
+    }
+
+    private Token refresh(String refreshToken) {
+        return tokenProvider.refresh(refreshToken);
+    }
 
 
 }
@@ -41,4 +49,9 @@ class LoginResponse{
     public LoginResponse(Token token) {
         this.token = token;
     }
+}
+
+@Value
+class RefreshTokenPayload {
+    public String refreshToken;
 }
