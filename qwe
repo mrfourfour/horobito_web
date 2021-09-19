@@ -1,0 +1,12 @@
+[33mae176ac[m[33m ([m[1;36mHEAD -> [m[1;32mfeat/keycloak-setup[m[33m)[m HEAD@{0}: commit: feat: create [UserController] and create <login> method
+[33m2f0b152[m HEAD@{1}: commit: feat: create [WebSecurityConfig]
+[33m3ff7b7c[m HEAD@{2}: commit: feat: create [KeyCloakTokenProvider]
+[33madda2a3[m HEAD@{3}: commit: fix: change return type
+[33m69a322a[m HEAD@{4}: commit: chore : add dependencies
+[33m965372f[m HEAD@{5}: commit: feat: create [DuplicateUserSignUpException] class
+[33m3d8f2a1[m HEAD@{6}: commit: feat: create [Token] class
+[33m1eb14dd[m HEAD@{7}: commit: Typo: change name [Token -> TokenRequest]
+[33mf781b8b[m HEAD@{8}: commit: feat: add [TokenRequest] class
+[33m1375f6a[m HEAD@{9}: commit: feat: add [Token] interface
+[33mea82bf4[m HEAD@{10}: commit: chore : setting keycloak dependency
+[33m01bf7e4[m HEAD@{11}: commit (initial): chore : init setting
