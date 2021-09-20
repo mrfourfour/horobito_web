@@ -33,11 +33,16 @@ public class UserController {
         return tokenProvider.refresh(refreshToken);
     }
 
+    @PostMapping("/sign-up")
+    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest){
+        userService.signUp(signUpRequest.username, signUpRequest.password);
+        return ResponseEntity.ok().build();
+    }
+
 
 }
 
 @Value
-@Getter
 class LoginRequest{
     String username;
     String password;
@@ -55,3 +60,11 @@ class LoginResponse{
 class RefreshTokenPayload {
     public String refreshToken;
 }
+
+@Value
+class SignUpRequest{
+    public String username;
+    public String password;
+}
+
+
