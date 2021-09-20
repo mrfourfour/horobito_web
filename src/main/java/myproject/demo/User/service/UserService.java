@@ -68,11 +68,10 @@ public class UserService {
 
     private String getLoggedUsername() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username;
         if (principal instanceof UserDetails) {
-            return username = ((UserDetails)principal).getUsername();
+            return ((UserDetails)principal).getUsername();
         } else {
-            return username = principal.toString();
+            return principal.toString();
         }
     }
 
