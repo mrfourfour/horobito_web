@@ -75,7 +75,14 @@ public class UserService {
 
     public UserDto findUserByUserId(Long userId){
         Optional<User> searchedUser = userRepository.findById(userId);
+        checkEmpty(searchedUser);
         return getUserDto(searchedUser);
+    }
+
+    private void checkEmpty(Optional<User> searchedUser) {
+        if (searchedUser.isEmpty()){
+            throw new NullPointerException();
+        }
     }
 
     public UserDto getUserDto(Optional<User> user){
