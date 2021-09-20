@@ -35,6 +35,9 @@ public class User {
     public static User create(Username username, Password password){
         return new User(username, password);
     }
+    public Long getUserId(){
+        return this.id;
+    }
 
     public String getUsername(){
         return this.username.getUsername();
