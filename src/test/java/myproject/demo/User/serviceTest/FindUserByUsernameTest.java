@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FindUserByInfoTest {
+public class FindUserByUsernameTest {
 
     @Mock
     UserRepository userRepository;
@@ -49,4 +49,19 @@ public class FindUserByInfoTest {
         assertEquals("user",sut.findUserByUsername(any()).getUsername() );
 
     }
+
+    @DisplayName(" Find By Username Test 2. abnormal condition - user doesn't exist ")
+    @Test
+    public void test2(){
+
+        UserService sut = new UserService(userRepository, tokenProvider);
+
+
+
+        assertThrows(NullPointerException.class, ()->sut.findUserByUserId(any()));
+
+
+    }
+
+
 }
