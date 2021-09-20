@@ -6,10 +6,7 @@ import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.KeyCloak.service.TokenRequest;
-import myproject.demo.User.domain.Password;
-import myproject.demo.User.domain.User;
-import myproject.demo.User.domain.UserRepository;
-import myproject.demo.User.domain.Username;
+import myproject.demo.User.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -29,15 +26,16 @@ public class UserService {
         return tokenProvider.issue(tokenRequest);
     }
 
-    public void signUp(String username, String password) {
+    public void signUp(String username, String password, String auth) {
+        checkDuplicateUser(username);
         TokenRequest tokenRequest
                 = TokenRequest.create(username, password);
         tokenProvider.signUp(tokenRequest);
-        save(username, password);
+        save(username, password, auth);
     }
 
-    public void save(String username, String password){
-        User user = User.create(Username.create(username), Password.create(password));
+    public void save(String username, String password, String auth){
+        User user = User.create(Username.create(username), Password.create(password), Authority.create(auth));
         userRepository.save(user);
     }
 
