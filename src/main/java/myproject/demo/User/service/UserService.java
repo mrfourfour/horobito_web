@@ -10,7 +10,11 @@ import myproject.demo.User.domain.Password;
 import myproject.demo.User.domain.User;
 import myproject.demo.User.domain.UserRepository;
 import myproject.demo.User.domain.Username;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +42,46 @@ public class UserService {
     }
 
 
-    public void checkDuplicateUser(String usernname){
-        if (userRepository.existsByUsername(Username.create(usernname))){
+    public void checkDuplicateUser(String username){
+        if (userRepository.existsByUsername(Username.create(username))){
             throw new DuplicateUserSignUpException();
         }
+    }
+
+    public boolean checkExistenceByUsername(String username){
+        return userRepository.existsByUsername(Username.create(username));
+    }
+
+    public boolean checkExistenceByUserId(Long id){
+        return userRepository.existsById(id);
+    }
+
+    public UserDto findUserByUsername(String username){
+        Optional<User> searchedUser = userRepository.findByUsername(Username.create(username));
+        return getUserDto(searchedUser);
+
+    }
+
+    public UserDto findLoggedUser(){
+        return findUserByUsername(getLoggedUsername());
+    }
+
+    private String getLoggedUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            return username = ((UserDetails)principal).getUsername();
+        } else {
+            return username = principal.toString();
+        }
+    }
+
+    public UserDto findUserByUserId(Long userId){
+        Optional<User> searchedUser = userRepository.findById(userId);
+        return getUserDto(searchedUser);
+    }
+
+    public UserDto getUserDto(Optional<User> user){
+        return new UserDto(user.get().getUserId(), user.get().getUsername());
     }
 }
