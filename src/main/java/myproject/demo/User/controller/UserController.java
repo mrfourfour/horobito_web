@@ -35,7 +35,13 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest){
-        userService.signUp(signUpRequest.username, signUpRequest.password);
+        userService.signUp(signUpRequest.username, signUpRequest.password, "ROLE_USER");
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/sign-up/admin")
+    public ResponseEntity<Void> signUpAdmin(@RequestBody SignUpRequest signUpRequest){
+        userService.signUp(signUpRequest.username, signUpRequest.password, "ROLE_ADMIN");
         return ResponseEntity.ok().build();
     }
 
