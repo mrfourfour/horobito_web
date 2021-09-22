@@ -22,8 +22,6 @@ public class Novel {
     @Embedded
     private AuthorId authorId;
 
-    @Embedded
-    private LastReadTime lastReadTime;
 
     private boolean deleted;
 
@@ -32,12 +30,12 @@ public class Novel {
         this.description = description;
         this.authorId = authorId;
         this.deleted = false;
+
     }
 
     public static Novel create(Title title, Description description, AuthorId authorId){
         return new Novel(title, description, authorId);
     }
-
 
     public boolean checkDeleted(){
         return this.deleted;
@@ -58,14 +56,6 @@ public class Novel {
 
     public String getDescription(){
         return this.description.getDescription();
-    }
-
-    public void renewalLastReadTime(){
-        this.lastReadTime = LastReadTime.create(LocalDateTime.now());
-    }
-
-    public LocalDateTime getLastReadTime(){
-        return this.lastReadTime.getLastReadTime();
     }
 
     public Long getAuthorId(){
