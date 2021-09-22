@@ -39,4 +39,12 @@ public class Category {
         this.deleted = true;
     }
 
+    public Long getId(){
+        return this.id;
+    }
+
+    public String getName(){
+        return this.categoryName.getCategoryName();
+    }
+
 }
