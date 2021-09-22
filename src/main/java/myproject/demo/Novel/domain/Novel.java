@@ -67,4 +67,8 @@ public class Novel {
     public LocalDateTime getLastReadTime(){
         return this.lastReadTime.getLastReadTime();
     }
+
+    public Long getAuthorId(){
+        return this.authorId.getAuthorId();
+    }
 }
