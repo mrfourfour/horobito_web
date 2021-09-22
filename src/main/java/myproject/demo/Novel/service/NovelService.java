@@ -7,6 +7,8 @@ import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class NovelService {
@@ -25,6 +27,28 @@ public class NovelService {
         save(novel);
         return createNovelDto(novel);
     }
+
+    public NovelDto editNovel(Long novelId, String title, String description){
+        checkExistenceById(novelId);
+        Novel novel = novelRepository.findByTitle(Title.create(title)).get();
+        novel.change(title, description);
+        return createNovelDto(novel);
+    }
+
+    private void checkExistenceById(Long novelId) {
+        if(!novelRepository.existsById(novelId)){
+            throw new IllegalArgumentException();
+        }
+    }
+
+
+
+    private void checkExistenceByTitle(String title) {
+        if (!novelRepository.existsByTitle(Title.create(title))){
+            throw new IllegalArgumentException();
+        }
+    }
+
 
     private void checkDuplicateTitle(String title) {
         if (novelRepository.existsByTitle(Title.create(title))){
