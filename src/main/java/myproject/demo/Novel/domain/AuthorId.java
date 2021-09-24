@@ -18,6 +18,6 @@ public class AuthorId {
     }
 
     public static AuthorId create(Long authorId){
-        return new AuthorId();
+        return new AuthorId(authorId);
     }
 }

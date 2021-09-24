@@ -33,32 +33,32 @@ public class Novel {
 
     }
 
-    public static Novel create(Title title, Description description, AuthorId authorId){
+    public static Novel create(Title title, Description description, AuthorId authorId) {
         return new Novel(title, description, authorId);
     }
 
-    public boolean checkDeleted(){
+    public boolean checkDeleted() {
         return this.deleted;
     }
 
-    public void delete(){
+    public void delete() {
         this.deleted = true;
     }
 
-    public void change(String title, String description){
+    public void change(String title, String description) {
         this.title = Title.create(title);
         this.description = Description.create(description);
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return this.title.getTitle();
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description.getDescription();
     }
 
-    public Long getAuthorId(){
+    public Long getAuthorId() {
         return this.authorId.getAuthorId();
     }
 }
