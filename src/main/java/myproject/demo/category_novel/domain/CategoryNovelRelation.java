@@ -40,5 +40,13 @@ public class CategoryNovelRelation {
         this.deleted = true;
     }
 
+    public Long getNovelId(){
+        return this.novelId;
+    }
+
+    public Long getCategoryId(){
+        return this.novelId;
+    }
+
 
 }
