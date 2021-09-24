@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Table;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +38,28 @@ public class CategoryNovelRelationService {
         relationRepository.saveAll(relations);
     }
 
+    @Transactional
+    public void delete(Long novelId, Long categoryId){
+        Optional<CategoryNovelRelation> relation = relationRepository.findById(CategoryNovelRelationId.create(categoryId, novelId));
+        checkExistence(relation);
+        checkAlreadyDeleted(relation.get());
+        relation.get().delete();
+    }
+
+
+
+    private void checkAlreadyDeleted(CategoryNovelRelation relation) {
+        if (relation.checkDeleted()){
+            throw new IllegalArgumentException();
+        }
+    }
+
+
+    private void checkExistence(Optional<CategoryNovelRelation> relation) {
+        if (relation.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+    }
 
 
 }
