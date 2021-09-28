@@ -40,7 +40,7 @@ public class CategoryNovelRelationId implements Serializable {
             return true;
         }
 
-        if (obj instanceof CategoryNovelRelationId) {
+        if (!(obj instanceof CategoryNovelRelationId)) {
             return false;
         }
 

@@ -38,7 +38,7 @@ public class PreferenceCountId implements Serializable {
             return true;
         }
 
-        if (obj instanceof PreferenceCountId) {
+        if (!(obj instanceof PreferenceCountId)) {
             return false;
         }
 
@@ -55,6 +55,6 @@ public class PreferenceCountId implements Serializable {
 
     @Override
     public int hashCode(){
-        return Objects.hash(novelId, userId, episodeId);
+        return Objects.hash(novelId, episodeId);
     }
 }

@@ -38,7 +38,7 @@ public class PreferenceInfoId implements Serializable {
             return true;
         }
 
-        if (obj instanceof PreferenceInfoId) {
+        if (!(obj instanceof PreferenceInfoId)) {
             return false;
         }
 
