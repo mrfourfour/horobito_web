@@ -18,10 +18,22 @@ public class PreferenceCount {
     @Embedded
     private Count count;
 
-    private PreferenceCount(Long novelId, Long episodeId ) {
+    private PreferenceCount(Long novelId, Long episodeId, Long count ) {
         this.novelId = novelId;
         this.episodeId = episodeId;
-        this.count = Count.create(0L);
+        this.count = Count.create(count);
+    }
+
+    public static PreferenceCount create(Long novelId, Long episodeId, Long count ){
+        return new PreferenceCount(novelId, episodeId, count);
+    }
+
+    public Long getEpisodeId() {
+        return this.episodeId;
+    }
+
+    public Long getNovelId() {
+        return this.novelId;
     }
 
 
