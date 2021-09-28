@@ -29,15 +29,16 @@ public class Episode {
 
     private boolean deleted;
 
-    private Episode(Long novelId, Long episodeNum, ContentURL contentURL) {
+    private Episode(Long novelId, Long episodeNum, AuthorComment authorComment, ContentURL contentURL) {
         this.novelId = novelId;
         this.episodeNum = episodeNum;
+        this.authorComment = authorComment;
         this.contentURL = contentURL;
         this.registrationTime = LocalDateTime.now();
     }
 
-    public static Episode create(Long novelId, Long episodeNum, ContentURL contentURL){
-        return new Episode(novelId, episodeNum, contentURL);
+    public static Episode create(Long novelId, Long episodeNum,AuthorComment authorComment, ContentURL contentURL){
+        return new Episode(novelId, episodeNum, authorComment, contentURL);
     }
 
     public boolean checkDeleted() {
