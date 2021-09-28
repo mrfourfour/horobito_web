@@ -28,12 +28,24 @@ public class PreferenceCount {
         return new PreferenceCount(novelId, episodeId, count);
     }
 
+    public void increase(){
+        this.count = Count.create(getCount()+1L);
+    }
+
+    public void decrease(){
+        this.count = Count.create(getCount()-1L);
+    }
+
     public Long getEpisodeId() {
         return this.episodeId;
     }
 
     public Long getNovelId() {
         return this.novelId;
+    }
+
+    public Long getCount(){
+        return this.count.getCount();
     }
 
 
