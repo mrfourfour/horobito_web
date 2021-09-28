@@ -27,13 +27,16 @@ public class PreferenceService {
     private final PreferenceCountRepository preferenceCountRepository;
 
     @Transactional
-    public void like(Long novelId, Long episodeId){
+    public void prefer(Long novelId, Long episodeId){
         Long userId = userService.findLoggedUser().getUserId();
         checkAlreadyLiked(PreferenceInfoId.create(novelId, userId, episodeId));
         checkExistenceNovelAndEpisode(novelId, episodeId);
         createPreference(novelId,userId,episodeId);
         increasePreferenceCount(novelId, episodeId);
     }
+
+    @Transactional
+    public void cancleLike
 
     private void createPreference(Long novelId, Long userId, Long episodeId) {
         PreferenceInfo preferenceInfo = PreferenceInfo.create(novelId,userId,episodeId);
