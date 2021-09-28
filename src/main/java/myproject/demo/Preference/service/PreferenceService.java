@@ -2,6 +2,7 @@ package myproject.demo.Preference.service;
 
 
 import lombok.RequiredArgsConstructor;
+import myproject.demo.Episode.service.EpisodeService;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfo;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoId;
