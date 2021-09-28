@@ -10,13 +10,17 @@ import javax.persistence.*;
 public class PreferenceCount {
 
     @Id
-    private Long id;
+    private Long novelId;
+
+    @Id
+    private Long episodeId;
 
     @Embedded
     private Count count;
 
-    private PreferenceCount(Long novelId ) {
-        this.id = novelId;
+    private PreferenceCount(Long novelId, Long episodeId ) {
+        this.novelId = novelId;
+        this.episodeId = episodeId;
         this.count = Count.create(0L);
     }
 
