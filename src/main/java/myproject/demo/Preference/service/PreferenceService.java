@@ -36,7 +36,34 @@ public class PreferenceService {
     }
 
     @Transactional
-    public void cancleLike
+    public void cancelPreference(Long novelId, Long episodeId){
+        Long userId = userService.findLoggedUser().getUserId();
+        deletePreferenceInfo(novelId, episodeId, userId);
+    }
+
+
+    private void deletePreferenceInfo(Long novelId, Long episodeId, Long userId) {
+        checkPreferenceInfoExistence(novelId, episodeId, userId);
+        PreferenceInfo info = preferenceInfoRepository.findById(PreferenceInfoId.create(novelId, userId, episodeId)).get();
+        checkAlreadyCancelled(info);
+        delete(info);
+    }
+
+    private void checkAlreadyCancelled(PreferenceInfo info) {
+        if (!info.checkDeleted()){
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void delete(PreferenceInfo info) {
+        info.delete();
+    }
+
+    private void checkPreferenceInfoExistence(Long novelId, Long episodeId, Long userId) {
+        if (!preferenceInfoRepository.existsById(PreferenceInfoId.create(novelId, userId, episodeId))){
+            throw new IllegalArgumentException();
+        }
+    }
 
     private void createPreference(Long novelId, Long userId, Long episodeId) {
         PreferenceInfo preferenceInfo = PreferenceInfo.create(novelId,userId,episodeId);
