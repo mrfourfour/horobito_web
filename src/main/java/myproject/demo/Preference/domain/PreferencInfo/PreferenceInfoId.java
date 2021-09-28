@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -17,11 +18,14 @@ public class PreferenceInfoId implements Serializable {
 
     private Long episodeId;
 
+    private LocalDateTime preferenceTime;
+
 
     private PreferenceInfoId(Long novelId, Long userId, Long episodeId) {
         this.novelId = novelId;
         this.userId = userId;
         this.episodeId = episodeId;
+        preferenceTime = LocalDateTime.now();
     }
 
     public static PreferenceInfoId create(Long novelId, Long userId, Long episodeId){
