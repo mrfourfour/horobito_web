@@ -43,6 +43,10 @@ public class PreferenceInfo {
         this.deleted = true;
     }
 
+    public void resurrect(){
+        this.deleted = false;
+    }
+
     public Long getNovelId() {
         return this.novelId;
     }
