@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class  EpisodeService {
+public class EpisodeService {
 
     private final NovelService novelService;
 
@@ -19,24 +19,48 @@ public class  EpisodeService {
     private final EpisodeRepository episodeRepository;
 
     @Transactional
-    public void create(Long novelId, String content, String authorComment ){
+    public void create(Long novelId, String content, String authorComment) {
         novelService.checkExistenceById(novelId);
         Episode newEpi = Episode.create(
-          novelId,
-          getEpisodeNum(novelId),
-          AuthorComment.create(authorComment),
-          ContentURL.create(enrollContent(content))
+                novelId,
+                getEpisodeNum(novelId),
+                AuthorComment.create(authorComment),
+                ContentURL.create(enrollContent(content))
         );
         episodeRepository.save(newEpi);
 
     }
 
     @Transactional
-    public void changeAuthorComment(Long novelId, Long episodeNum, String newComment){
+    public void changeAuthorComment(Long novelId, Long episodeNum, String newComment) {
         novelService.checkExistenceById(novelId);
         checkExistenceById(novelId, episodeNum);
         Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
+        checkAlreadyDeleted(episode);
         episode.changeAuthorComment(newComment);
+    }
+
+    @Transactional
+    public void delete(Long novelId, Long episodeNum) {
+        checkExistenceById(novelId, episodeNum);
+        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
+        checkAlreadyDeleted(episode);
+        episode.delete();
+    }
+
+
+    @Transactional
+    public void resurrect(Long novelId, Long episodeNum){
+        checkExistenceById(novelId, episodeNum);
+        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
+        checkAlreadyDeleted(episode);
+        episode.delete();
+    }
+
+    private void checkAlreadyDeleted(Episode episode) {
+        if (episode.isDeleted()){
+            throw new IllegalArgumentException();
+        }
     }
 
     private String enrollContent(String content) {
@@ -44,7 +68,7 @@ public class  EpisodeService {
         return "";
     }
 
-    private void changeContent(Long novelId, Long episodeNum, String content){
+    private void changeContent(Long novelId, Long episodeNum, String content) {
         novelService.checkExistenceById(novelId);
         checkExistenceById(novelId, episodeNum);
         editContent(episodeNum, content);
@@ -54,16 +78,16 @@ public class  EpisodeService {
     }
 
     public void checkExistenceById(Long novelId, Long episodeNum) {
-        if (!(episodeRepository.existsById(EpisodeId.create(novelId, episodeNum)))){
+        if (!(episodeRepository.existsById(EpisodeId.create(novelId, episodeNum)))) {
             throw new IllegalArgumentException();
         }
     }
 
     private Long getEpisodeNum(Long novelId) {
-        if (!episodeRepository.existsByNovelIdAndDeleted(novelId, false)){
+        if (!episodeRepository.existsByNovelIdAndDeleted(novelId, false)) {
             return 1L;
-        }else {
-            return episodeRepository.findTopByNovelIdAndDeleted(novelId, false).get().getEpisodeNum()+1;
+        } else {
+            return episodeRepository.findTopByNovelIdAndDeleted(novelId, false).get().getEpisodeNum() + 1;
         }
     }
 }
