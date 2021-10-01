@@ -31,6 +31,14 @@ public class  EpisodeService {
 
     }
 
+    @Transactional
+    public void changeAuthorComment(Long novelId, Long episodeNum, String newComment){
+        novelService.checkExistenceById(novelId);
+        checkExistenceById(novelId, episodeNum);
+        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
+        episode.changeAuthorComment(newComment);
+    }
+
     private String enrollContent(String content) {
 
         return "";
@@ -40,14 +48,6 @@ public class  EpisodeService {
         novelService.checkExistenceById(novelId);
         checkExistenceById(novelId, episodeNum);
         editContent(episodeNum, content);
-    }
-
-    @Transactional
-    public void changeAuthorComment(Long novelId, Long episodeNum, String newComment){
-        novelService.checkExistenceById(novelId);
-        checkExistenceById(novelId, episodeNum);
-        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
-        episode.changeAuthorComment(newComment);
     }
 
     private void editContent(Long episodeNum, String content) {
