@@ -70,14 +70,14 @@ public class NovelService {
         }
     }
 
-    private void checkExistenceById(Long novelId) {
+    public void checkExistenceById(Long novelId) {
         if (!novelRepository.existsById(novelId)) {
             throw new IllegalArgumentException();
         }
     }
 
 
-    private void checkExistenceByTitle(String title) {
+    public void checkExistenceByTitle(String title) {
         if (!novelRepository.existsByTitle(Title.create(title))) {
             throw new IllegalArgumentException();
         }

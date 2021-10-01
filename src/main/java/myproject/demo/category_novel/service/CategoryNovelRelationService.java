@@ -46,14 +46,21 @@ public class CategoryNovelRelationService {
         relation.get().delete();
     }
 
-    public List<Long> findNovelIdsByCategoryIds(List<Long> categoryIds){
+    public List<Long> findByCategoryIds(List<Long> categoryIds){
         return relationRepository.findByCategoryIdIn(categoryIds).stream()
         .filter(Optional::isPresent)
         .map(categoryNovelRelation -> categoryNovelRelation.get().getNovelId())
         .collect(Collectors.toList());
     }
 
-
+    public List<Long> findByNovelIds(List<Long> categoryIds){
+        return relationRepository.findByCategoryIdIn(categoryIds).stream()
+                .filter(Optional::isPresent)
+                .map(categoryNovelRelation -> categoryNovelRelation.get().getNovelId())
+                .collect(Collectors.toList());
+    }
+    
+    
 
     private void checkAlreadyDeleted(CategoryNovelRelation relation) {
         if (relation.checkDeleted()){
