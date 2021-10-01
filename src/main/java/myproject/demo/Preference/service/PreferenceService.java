@@ -2,6 +2,7 @@ package myproject.demo.Preference.service;
 
 
 import lombok.RequiredArgsConstructor;
+import myproject.demo.Episode.service.EpisodeService;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfo;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoId;
@@ -72,7 +73,7 @@ public class PreferenceService {
 
     private void checkExistenceNovelAndEpisode(Long novelId, Long episodeId) {
         novelService.checkExistenceById(novelId);
-        episodeService.checkExistenceById(episodeId);
+        episodeService.checkExistenceById(novelId, episodeId);
     }
 
     private void increasePreferenceCount(Long novelId, Long episodeId) {
