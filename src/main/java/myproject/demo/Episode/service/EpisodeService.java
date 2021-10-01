@@ -6,10 +6,11 @@ import myproject.demo.Episode.domain.*;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class EpisodeService {
+public class  EpisodeService {
 
     private final NovelService novelService;
 
@@ -17,6 +18,7 @@ public class EpisodeService {
 
     private final EpisodeRepository episodeRepository;
 
+    @Transactional
     public void create(Long novelId, String content, String authorComment ){
         novelService.checkExistenceById(novelId);
         Episode newEpi = Episode.create(
@@ -38,6 +40,14 @@ public class EpisodeService {
         novelService.checkExistenceById(novelId);
         checkExistence(novelId, episodeNum);
         editContent(episodeNum, content);
+    }
+
+    @Transactional
+    public void changeAuthorComment(Long novelId, Long episodeNum, String newComment){
+        novelService.checkExistenceById(novelId);
+        checkExistence(novelId, episodeNum);
+        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
+        episode.changeAuthorComment(newComment);
     }
 
     private void editContent(Long episodeNum, String content) {
