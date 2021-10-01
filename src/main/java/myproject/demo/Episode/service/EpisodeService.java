@@ -38,14 +38,14 @@ public class  EpisodeService {
 
     private void changeContent(Long novelId, Long episodeNum, String content){
         novelService.checkExistenceById(novelId);
-        checkExistence(novelId, episodeNum);
+        checkExistenceById(novelId, episodeNum);
         editContent(episodeNum, content);
     }
 
     @Transactional
     public void changeAuthorComment(Long novelId, Long episodeNum, String newComment){
         novelService.checkExistenceById(novelId);
-        checkExistence(novelId, episodeNum);
+        checkExistenceById(novelId, episodeNum);
         Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
         episode.changeAuthorComment(newComment);
     }
@@ -53,7 +53,7 @@ public class  EpisodeService {
     private void editContent(Long episodeNum, String content) {
     }
 
-    private void checkExistence(Long novelId, Long episodeNum) {
+    public void checkExistenceById(Long novelId, Long episodeNum) {
         if (!(episodeRepository.existsById(EpisodeId.create(novelId, episodeNum)))){
             throw new IllegalArgumentException();
         }

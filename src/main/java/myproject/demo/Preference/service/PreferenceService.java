@@ -73,7 +73,7 @@ public class PreferenceService {
 
     private void checkExistenceNovelAndEpisode(Long novelId, Long episodeId) {
         novelService.checkExistenceById(novelId);
-        episodeService.checkExistenceById(episodeId);
+        episodeService.checkExistenceById(novelId, episodeId);
     }
 
     private void increasePreferenceCount(Long novelId, Long episodeId) {
