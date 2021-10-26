@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -26,16 +27,22 @@ public class UserService {
         return tokenProvider.issue(tokenRequest);
     }
 
-    public void signUp(String username, String password, String auth) {
+    public void signUp(String username, String password, String auth, LocalDateTime birthDay, String gender) {
         checkDuplicateUser(username);
         TokenRequest tokenRequest
                 = TokenRequest.create(username, password);
         tokenProvider.signUp(tokenRequest);
-        save(username, password, auth);
+        save(username, password, auth, birthDay, gender);
     }
 
-    public void save(String username, String password, String auth){
-        User user = User.create(Username.create(username), Password.create(password), Authority.create(auth));
+    public void save(String username, String password, String auth, LocalDateTime birthDay, String gender){
+        User user = User.create(
+                Username.create(username),
+                Password.create(password),
+                Authority.create(auth),
+                birthDay,
+                Gender.valueOf(gender)
+                );
         userRepository.save(user);
     }
 
