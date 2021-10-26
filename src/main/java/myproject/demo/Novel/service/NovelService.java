@@ -19,24 +19,25 @@ public class NovelService {
     private final NovelRepository novelRepository;
 
     @Transactional
-    public NovelDto createNovel(String title, String description) {
+    public NovelDto createNovel(String title, String description, int age) {
         checkDuplicateTitle(title);
         UserDto userDto = userService.findLoggedUser();
         Novel novel = Novel.create(
                 Title.create(title),
                 Description.create(description),
-                AuthorId.create(userDto.getUserId())
+                AuthorId.create(userDto.getUserId()),
+                Age.create(age)
         );
         save(novel);
         return createNovelDto(novel);
     }
 
     @Transactional
-    public NovelDto editNovel(Long novelId, String title, String description) throws IllegalAccessException {
+    public NovelDto editNovel(Long novelId, String title, String description, int age) throws IllegalAccessException {
         checkExistenceById(novelId);
         Novel novel = novelRepository.findByTitle(Title.create(title)).get();
         checkRequesterIdentity(userService.findLoggedUser().getUserId(), novel.getAuthorId());
-        novel.change(title, description);
+        novel.change(title, description, age);
         return createNovelDto(novel);
     }
 
@@ -49,13 +50,25 @@ public class NovelService {
         novel.delete();
     }
 
-    private List<NovelDto> getNovels(List<Long> novelIds) {
+
+
+    private List<NovelDto> getAllNovels(List<Long> novelIds) {
         List<NovelDto> novels = novelIds.stream()
-                .map(novelRepository::findById)
-                .filter(novel -> !novel.get().checkDeleted())
+                .map(id->novelRepository.findByIdAndDeleted(id, false))
                 .map(novel -> createNovelDto(novel.get())).collect(Collectors.toList());
         return novels;
     }
+
+    private List<NovelDto> getNovelsByAge(List<Long> novelIds, int age) {
+        List<NovelDto> novels = novelIds.stream()
+                .map(id->novelRepository.findByIdAndDeletedAndAgeGreaterThanEqual(id, false, Age.create(age)))
+                .map(novel -> createNovelDto(novel.get())).collect(Collectors.toList());
+        return novels;
+    }
+
+
+
+
 
 
     private void checkAlreadyDeleted(Novel novel) {
