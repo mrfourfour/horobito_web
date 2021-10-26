@@ -6,6 +6,7 @@ import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.domain.*;
+import org.bouncycastle.util.Strings;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class UserService {
                 Password.create(password),
                 Authority.create(auth),
                 birthDay,
-                Gender.valueOf(gender)
+                Gender.valueOf(Strings.toUpperCase(gender))
                 );
         userRepository.save(user);
     }

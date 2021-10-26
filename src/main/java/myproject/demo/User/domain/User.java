@@ -2,6 +2,7 @@ package myproject.demo.User.domain;
 
 
 import lombok.NoArgsConstructor;
+import org.bouncycastle.util.Strings;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -91,7 +92,7 @@ public class User {
     }
 
     public void changeGender(String gender){
-        this.gender = Gender.valueOf(gender);
+        this.gender = Gender.valueOf(Strings.toUpperCase(gender));
     }
 
 }
