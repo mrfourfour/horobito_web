@@ -5,6 +5,7 @@ import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.controller.UserExceptionHandler;
+import myproject.demo.User.domain.Gender;
 import myproject.demo.User.domain.UserRepository;
 import myproject.demo.User.service.UserService;
 import myproject.demo.User.service.UsernameDuplicateChecker;
@@ -63,15 +64,15 @@ public class SignUpTest {
 
         UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
 
-        when(userRepository.existsByUsername(any())).thenThrow(new DuplicateUserSignUpException());
-//        doThrow(new DuplicateUserSignUpException()).when(sut).checkDuplicateUser(any());
+
+        doThrow(new DuplicateUserSignUpException()).when(usernameDuplicateChecker).checkDuplicate(any());
 //        verify(handler, times(1)).duplicateUserHandler(any());
         assertThrows(DuplicateUserSignUpException.class, () -> sut.signUp(
                 "test",
                 "t",
                 "t",
                 LocalDateTime.now(),
-                "t"));
+               "male"));
     }
 
 }
