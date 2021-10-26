@@ -39,6 +39,20 @@ public class GradeService {
         checkExistence(novelId);
     }
 
+    @Transactional
+    public void changePremium(Long novelId, boolean premium){
+        novelService.checkExistenceById(novelId);
+        checkExistence(novelId);
+        checkPremium(novelId, premium);
+        gradeRepository.findById(novelId).get().changePremium(premium);
+    }
+
+    private void checkPremium(Long novelId, boolean premium) {
+        if (gradeRepository.findById(novelId).get().getPremium()==premium){
+            throw new IllegalArgumentException();
+        }
+    }
+
     private void checkExistence(Long novelId) {
         if (!gradeRepository.findById(novelId).isPresent()
                 || gradeRepository.findById(novelId).get().getDeleted()){
