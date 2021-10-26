@@ -1,16 +1,21 @@
 package myproject.demo.User.controller;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.User.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,15 +40,30 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest){
-        userService.signUp(signUpRequest.username, signUpRequest.password, "ROLE_USER");
+        userService.signUp(signUpRequest.username,
+                signUpRequest.password,
+                "ROLE_USER",
+                signUpRequest.birthDay,
+                signUpRequest.gender);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sign-up/admin")
     public ResponseEntity<Void> signUpAdmin(@RequestBody SignUpRequest signUpRequest){
-        userService.signUp(signUpRequest.username, signUpRequest.password, "ROLE_ADMIN");
+        userService.signUp(signUpRequest.username,
+                signUpRequest.password,
+                "ROLE_ADMIN",
+                signUpRequest.birthDay,
+                signUpRequest.gender);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/email-duplicate-check")
+    public ResponseEntity<Void> checkDuplicateUser(String username){
+        userService.checkDuplicateUser(username);
+        return ResponseEntity.ok().build();
+    }
+
 
 
 }
@@ -71,6 +91,9 @@ class RefreshTokenPayload {
 class SignUpRequest{
     public String username;
     public String password;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd")
+    public LocalDateTime birthDay;
+    public String gender;
 }
 
 

@@ -6,6 +6,8 @@ import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.controller.UserExceptionHandler;
 import myproject.demo.User.domain.*;
 import myproject.demo.User.service.UserService;
+import myproject.demo.User.service.UsernameDuplicateChecker;
+import org.bouncycastle.util.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,18 +33,23 @@ public class FindUserByUsernameTest {
     TokenProvider tokenProvider;
 
     @Mock
+    UsernameDuplicateChecker usernameDuplicateChecker;
+
+    @Mock
     UserExceptionHandler handler;
 
     @DisplayName(" Find By Username Test 1. normal condition ")
     @Test
     public void test1(){
 
-        UserService sut = new UserService(userRepository, tokenProvider);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
 
         Optional<User> user = Optional.of(User.create(
                 Username.create("user"),
                 Password.create("pwd"),
-                Authority.create("auth")
+                Authority.create("auth"),
+                LocalDateTime.now(),
+                Gender.valueOf(Strings.toUpperCase("male"))
         ));
 
         when(userRepository.findByUsername(any())).thenReturn(user);
@@ -54,9 +62,7 @@ public class FindUserByUsernameTest {
     @Test
     public void test2(){
 
-        UserService sut = new UserService(userRepository, tokenProvider);
-
-
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
 
         assertThrows(NullPointerException.class, ()->sut.findUserByUserId(any()));
 

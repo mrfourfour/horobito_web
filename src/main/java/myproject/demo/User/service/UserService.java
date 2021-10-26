@@ -2,15 +2,16 @@ package myproject.demo.User.service;
 
 
 import lombok.RequiredArgsConstructor;
-import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.domain.*;
+import org.bouncycastle.util.Strings;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -20,30 +21,36 @@ public class UserService {
 
     private final TokenProvider tokenProvider;
 
+    private final UsernameDuplicateChecker usernameDuplicateChecker;
+
     public Token login(String username, String password){
         TokenRequest tokenRequest
                 = TokenRequest.create(username, password);
         return tokenProvider.issue(tokenRequest);
     }
 
-    public void signUp(String username, String password, String auth) {
+    public void signUp(String username, String password, String auth, LocalDateTime birthDay, String gender) {
         checkDuplicateUser(username);
         TokenRequest tokenRequest
                 = TokenRequest.create(username, password);
         tokenProvider.signUp(tokenRequest);
-        save(username, password, auth);
+        save(username, password, auth, birthDay, gender);
     }
 
-    public void save(String username, String password, String auth){
-        User user = User.create(Username.create(username), Password.create(password), Authority.create(auth));
+    public void save(String username, String password, String auth, LocalDateTime birthDay, String gender){
+        User user = User.create(
+                Username.create(username),
+                Password.create(password),
+                Authority.create(auth),
+                birthDay,
+                Gender.valueOf(Strings.toUpperCase(gender))
+                );
         userRepository.save(user);
     }
 
 
     public void checkDuplicateUser(String username){
-        if (userRepository.existsByUsername(Username.create(username))){
-            throw new DuplicateUserSignUpException();
-        }
+        usernameDuplicateChecker.checkDuplicate(username);
     }
 
     public boolean checkExistenceByUsername(String username){
