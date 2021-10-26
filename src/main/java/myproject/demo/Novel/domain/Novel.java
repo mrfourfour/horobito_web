@@ -1,9 +1,9 @@
 package myproject.demo.Novel.domain;
 
 import lombok.RequiredArgsConstructor;
+import org.bouncycastle.util.Strings;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @RequiredArgsConstructor
@@ -22,19 +22,25 @@ public class Novel {
     @Embedded
     private AuthorId authorId;
 
+    @Embedded
+    private Age age;
+
+
+
 
     private boolean deleted;
 
-    private Novel(Title title, Description description, AuthorId authorId) {
+    private Novel(Title title, Description description, AuthorId authorId, Age age) {
         this.title = title;
         this.description = description;
         this.authorId = authorId;
         this.deleted = false;
+        this.age = age;
 
     }
 
-    public static Novel create(Title title, Description description, AuthorId authorId) {
-        return new Novel(title, description, authorId);
+    public static Novel create( Title title, Description description, AuthorId authorId, Age age) {
+        return new Novel(title, description, authorId, age);
     }
 
     public boolean checkDeleted() {
@@ -45,9 +51,10 @@ public class Novel {
         this.deleted = true;
     }
 
-    public void change(String title, String description) {
+    public void change(String title, String description, int age) {
         this.title = Title.create(title);
         this.description = Description.create(description);
+        this.age = Age.create(age);
     }
 
     public String getTitle() {
@@ -61,4 +68,11 @@ public class Novel {
     public Long getAuthorId() {
         return this.authorId.getAuthorId();
     }
+
+    public int getAge(){
+        return this.age.getAge();
+    }
+
+
+
 }
