@@ -2,7 +2,6 @@ package myproject.demo.User.service;
 
 
 import lombok.RequiredArgsConstructor;
-import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.KeyCloak.service.TokenRequest;
@@ -20,6 +19,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final TokenProvider tokenProvider;
+
+    private final UsernameDuplicateChecker usernameDuplicateChecker;
 
     public Token login(String username, String password){
         TokenRequest tokenRequest
@@ -48,9 +49,7 @@ public class UserService {
 
 
     public void checkDuplicateUser(String username){
-        if (userRepository.existsByUsername(Username.create(username))){
-            throw new DuplicateUserSignUpException();
-        }
+        usernameDuplicateChecker.checkDuplicate(username);
     }
 
     public boolean checkExistenceByUsername(String username){

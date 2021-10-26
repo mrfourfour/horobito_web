@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.User.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +57,13 @@ public class UserController {
                 signUpRequest.gender);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/email-duplicate-check")
+    public ResponseEntity<Void> checkDuplicateUser(String username){
+        userService.checkDuplicateUser(username);
+        return ResponseEntity.ok().build();
+    }
+
 
 
 }
