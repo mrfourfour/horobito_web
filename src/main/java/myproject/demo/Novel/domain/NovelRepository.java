@@ -9,4 +9,7 @@ public interface NovelRepository extends JpaRepository<Novel, Long> {
 
     Optional<Novel> findByTitle(Title title);
 
+    Optional<Novel> findByIdAndDeleted(Long id, boolean deleted);
+
+    Optional<Novel> findByIdAndDeletedAndAgeGreaterThanEqual(Long id, boolean deleted, Age age);
 }
