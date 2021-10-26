@@ -8,6 +8,7 @@ import myproject.demo.grade.domain.GradeRepository;
 import myproject.demo.grade.domain.NovelId;
 import myproject.demo.grade.domain.Premium;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +20,30 @@ public class GradeService {
     private final GradeRepository gradeRepository;
     private final NovelService novelService;
 
+    @Transactional
     public void create(Long novelId, boolean premium){
         novelService.checkExistenceById(novelId);
-        gradeRepository.save(Grade.create(NovelId.create(novelId), Premium.create(premium)));
+        gradeRepository.save(Grade.create(novelId, Premium.create(premium)));
+    }
+
+    @Transactional
+    public void delete(Long novelId){
+        novelService.checkExistenceById(novelId);
+        checkExistence(novelId);
+        gradeRepository.findById(novelId).get().delete();
+    }
+
+    @Transactional
+    public void resurrect(Long novelId){
+        novelService.checkExistenceById(novelId);
+        checkExistence(novelId);
+    }
+
+    private void checkExistence(Long novelId) {
+        if (!gradeRepository.findById(novelId).isPresent()
+                || gradeRepository.findById(novelId).get().getDeleted()){
+            throw new IllegalArgumentException();
+        }
     }
 
     public List<Long> getNovelIdsByGrade(boolean premium){
@@ -37,6 +59,7 @@ public class GradeService {
                 .stream().map(Grade::getNovelId).collect(Collectors.toList());
 
     }
+
 
 
 }

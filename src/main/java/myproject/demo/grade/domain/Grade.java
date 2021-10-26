@@ -10,11 +10,7 @@ import javax.persistence.*;
 public class Grade {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Embedded
-    private NovelId novelId;
+    private Long novelId;
 
     @Embedded
     private Premium premium;
@@ -22,18 +18,22 @@ public class Grade {
     private boolean deleted;
 
 
-    private Grade(NovelId novelId, Premium premium) {
+    private Grade(Long novelId, Premium premium) {
         this.novelId = novelId;
         this.premium = premium;
         this.deleted = false;
     }
 
-    public static Grade create(NovelId novelId, Premium premium){
+    public static Grade create(Long novelId, Premium premium){
         return new Grade(novelId, premium);
     }
 
     public Long getNovelId(){
-        return this.novelId.getNovelId();
+        return this.novelId;
+    }
+
+    public boolean getDeleted(){
+        return this.deleted;
     }
 
     public boolean getPremium(){
