@@ -7,12 +7,15 @@ import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.controller.UserExceptionHandler;
 import myproject.demo.User.domain.UserRepository;
 import myproject.demo.User.service.UserService;
+import myproject.demo.User.service.UsernameDuplicateChecker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,6 +31,9 @@ public class SignUpTest {
     TokenProvider tokenProvider;
 
     @Mock
+    UsernameDuplicateChecker usernameDuplicateChecker;
+
+    @Mock
     UserExceptionHandler handler;
 
 
@@ -36,10 +42,15 @@ public class SignUpTest {
     @Test
     public void test1(){
 
-        UserService sut = new UserService(userRepository, tokenProvider);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
 
 
-        sut.signUp("test", "test", "test`");
+        sut.signUp(
+                "test",
+                "t",
+                "t",
+                LocalDateTime.now(),
+                "t");
 
         verify(tokenProvider, times(1)).signUp(any());
         verify(userRepository, times(1)).save(any());
@@ -50,12 +61,17 @@ public class SignUpTest {
     @Test
     public void test2(){
 
-        UserService sut = new UserService(userRepository, tokenProvider);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
 
         when(userRepository.existsByUsername(any())).thenThrow(new DuplicateUserSignUpException());
 //        doThrow(new DuplicateUserSignUpException()).when(sut).checkDuplicateUser(any());
 //        verify(handler, times(1)).duplicateUserHandler(any());
-        assertThrows(DuplicateUserSignUpException.class, () -> sut.signUp("test","t","t"));
+        assertThrows(DuplicateUserSignUpException.class, () -> sut.signUp(
+                "test",
+                "t",
+                "t",
+                LocalDateTime.now(),
+                "t"));
     }
 
 }
