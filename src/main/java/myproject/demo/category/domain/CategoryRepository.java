@@ -10,7 +10,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findAllByDeleted(boolean deleted);
 
-    Optional<Category> findByCategoryName_CategoryNameAndDeleted(String categoryNames, boolean deleted);
+    Optional<Category> findByCategoryNameAndDeleted(CategoryName categoryName, boolean deleted);
 
     Optional<Category> findByIdAndDeleted(Long id, boolean deleted);
 }
