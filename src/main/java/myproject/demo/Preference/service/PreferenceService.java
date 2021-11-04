@@ -54,6 +54,10 @@ public class PreferenceService {
     }
 
     private void checkLiked(PreferenceInfoId preferenceInfoId) {
+        if (!preferenceInfoRepository.existsById(preferenceInfoId)
+                && preferenceInfoRepository.findById(preferenceInfoId).get().checkDeleted()){
+            throw new IllegalArgumentException();
+        }
     }
 
     @Transactional
