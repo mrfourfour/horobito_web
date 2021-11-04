@@ -55,7 +55,7 @@ public class CategoryService {
 
     public List<CategoryDto> findAllByCategoryNames(List<String> categorieNames) {
         return categorieNames.stream().filter(this::checkName)
-                .map(name->categoryRepository.findByCategoryName_CategoryNameAndDeleted(name, false))
+                .map(name->categoryRepository.findByCategoryNameAndDeleted(CategoryName.create(name), false))
                 .map(category -> this.getCategoryDto(category.get())).collect(Collectors.toList());
 
     }
