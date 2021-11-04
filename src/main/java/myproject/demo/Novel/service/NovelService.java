@@ -19,25 +19,26 @@ public class NovelService {
     private final NovelRepository novelRepository;
 
     @Transactional
-    public NovelDto createNovel(String title, String description, int age) {
+    public NovelDto createNovel(String title, String description, int age, String url) {
         checkDuplicateTitle(title);
         UserDto userDto = userService.findLoggedUser();
         Novel novel = Novel.create(
                 Title.create(title),
                 Description.create(description),
                 AuthorId.create(userDto.getUserId()),
-                Age.create(age)
+                Age.create(age),
+                CoverImageUrl.create(url)
         );
-        save(novel);
-        return createNovelDto(novel);
+
+        return createNovelDto(save(novel));
     }
 
     @Transactional
-    public NovelDto editNovel(Long novelId, String title, String description, int age) throws IllegalAccessException {
+    public NovelDto editNovel(Long novelId, String title, String description, int age, String url) throws IllegalAccessException {
         checkExistenceById(novelId);
         Novel novel = novelRepository.findByTitle(Title.create(title)).get();
         checkRequesterIdentity(userService.findLoggedUser().getUserId(), novel.getAuthorId());
-        novel.change(title, description, age);
+        novel.change(title, description, age, url);
         return createNovelDto(novel);
     }
 
@@ -49,8 +50,6 @@ public class NovelService {
         checkAlreadyDeleted(novel);
         novel.delete();
     }
-
-
 
     private List<NovelDto> getAllNovels(List<Long> novelIds) {
         List<NovelDto> novels = novelIds.stream()
@@ -105,13 +104,23 @@ public class NovelService {
 
     private NovelDto createNovelDto(Novel novel) {
         return new NovelDto(
+                novel.getId(),
+                novel.getAuthorId(),
                 novel.getTitle(),
                 novel.getDescription(),
-                userService.findUserByUserId(novel.getAuthorId()).getUsername()
+                userService.findUserByUserId(novel.getAuthorId()).getUsername(),
+                novel.getCoverImageUrl(),
+                novel.isDeleted()
+
         );
     }
 
-    private void save(Novel novel) {
-        novelRepository.save(novel);
+    private Novel save(Novel novel) {
+        return novelRepository.saveAndFlush(novel);
+    }
+
+    public NovelDto getNovelDto(Long novelId) {
+        checkExistenceById(novelId);
+        return createNovelDto(novelRepository.findById(novelId).get());
     }
 }
