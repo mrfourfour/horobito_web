@@ -21,6 +21,8 @@ public class Category {
         this.deleted = false;
     }
 
+    private boolean deleted;
+
     public static Category create(CategoryName categoryName){
         return new Category(categoryName);
     }
@@ -28,8 +30,6 @@ public class Category {
     public void change(String newName){
         this.categoryName = CategoryName.create(newName);
     }
-
-    private boolean deleted;
 
     public boolean checkDeleted(){
         return this.deleted;
