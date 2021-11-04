@@ -57,6 +57,10 @@ public class EpisodeService {
         episode.delete();
     }
 
+    public int getTotalEpisode(Long novelId){
+        return episodeRepository.findAllByNovelIdAndDeleted(novelId, false).size();
+    }
+
     private void checkAlreadyDeleted(Episode episode) {
         if (episode.isDeleted()){
             throw new IllegalArgumentException();
