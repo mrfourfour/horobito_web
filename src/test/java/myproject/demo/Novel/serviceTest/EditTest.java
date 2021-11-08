@@ -37,7 +37,9 @@ public class EditTest {
     NovelRepository novelRepository;
 
 
-    @DisplayName("Create Test 1. Normal Condition")
+
+
+    @DisplayName("Edit Test 1. Normal Condition")
     @Test
     public void test1() throws IllegalAccessException {
 
@@ -78,5 +80,19 @@ public class EditTest {
     }
 
 
+    @DisplayName("Edit Test 2. Abnormal Condition : That novel doesn't exist")
+    @Test
+    public void test2() throws IllegalAccessException {
 
+        NovelService sut = new NovelService(userService, novelRepository);
+        when(novelRepository.existsById(any())).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class,()-> sut.editNovel(
+                1L,
+                "newTitle",
+                "newDescription",
+                15,
+                "newUrl"));
+
+    }
 }
