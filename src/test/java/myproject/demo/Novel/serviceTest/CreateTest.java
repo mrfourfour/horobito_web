@@ -5,6 +5,7 @@ import myproject.demo.Novel.NovelHelper;
 import myproject.demo.Novel.domain.Novel;
 import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.domain.Title;
+import myproject.demo.Novel.service.DuplicateNovelException;
 import myproject.demo.Novel.service.NovelDto;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.domain.*;
@@ -58,6 +59,18 @@ public class CreateTest {
         sut.createNovel("title", "description", 12, "url");
         verify(novelRepository, times(1)).saveAndFlush(any());
 
+
+    }
+
+
+    @DisplayName("Create Test 2. Abnormal Condition : Duplicate title")
+    @Test
+    public void test2(){
+        NovelService sut = new NovelService(userService, novelRepository);
+
+        when(novelRepository.existsByTitle(any())).thenReturn(true);
+
+        assertThrows(DuplicateNovelException.class, ()-> sut.createNovel("title", "description", 12, "url"));
 
     }
 }
