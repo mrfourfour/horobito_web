@@ -95,4 +95,26 @@ public class EditTest {
                 "newUrl"));
 
     }
+
+    @DisplayName("Edit Test 3. Abnormal Condition : request user != novel author")
+    @Test
+    public void test3() throws IllegalAccessException {
+
+        NovelService sut = new NovelService(userService, novelRepository);
+        Novel novel = NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+        UserDto userDto = new UserDto(2L, "authorName");
+
+        when(novelRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.findByTitle(any())).thenReturn(Optional.of(novel));
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+        assertThrows(IllegalArgumentException.class,()-> sut.editNovel(
+                1L,
+                "newTitle",
+                "newDescription",
+                15,
+                "newUrl"));
+    }
 }
