@@ -82,4 +82,24 @@ public class DeleteTest {
 
 
     }
+
+    @DisplayName("Delete Test 3. Abnormal Condition : requestUser != author")
+    @Test
+    public void test3() throws IllegalAccessException {
+        Novel novel = NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+        NovelService sut = new NovelService(userService, novelRepository);
+        UserDto userDto = new UserDto(2L, "authorName");
+
+        when(novelRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(1L));
+
+
+    }
 }
