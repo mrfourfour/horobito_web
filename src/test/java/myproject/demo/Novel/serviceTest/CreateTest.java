@@ -38,17 +38,17 @@ public class CreateTest {
     @DisplayName("Create Test 1. Normal Condition")
     @Test
     public void test1(){
-        NovelService sut = new NovelService(userService, novelRepository);
-
-        UserDto userDto = new UserDto(1L, "authorName");
-        when(userService.findLoggedUser()).thenReturn(userDto);
         User user = User.create(
                 Username.create("username"),
                 Password.create("password"),
                 Authority.create("auth"),
                 LocalDateTime.now(),
                 Gender.valueOf(Strings.toUpperCase("male"))
-                );
+        );
+
+        NovelService sut = new NovelService(userService, novelRepository);
+        UserDto userDto = new UserDto(1L, "authorName");
+        when(userService.findLoggedUser()).thenReturn(userDto);
         when(userService.findUserByUserId(any())).thenReturn(userDto);
         Novel novel = NovelHelper.create(
                 1L, 1L, "title", "descprition,"
@@ -73,4 +73,6 @@ public class CreateTest {
         assertThrows(DuplicateNovelException.class, ()-> sut.createNovel("title", "description", 12, "url"));
 
     }
+
+
 }
