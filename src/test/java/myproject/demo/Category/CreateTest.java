@@ -39,11 +39,9 @@ public class CreateTest {
 
         List<String> names = Arrays.asList("one", "two", "three");
 
-        when(categoryRepository.existsByCategoryName(any())).thenReturn(true);
-        when(categoryRepository.existsByCategoryName(any())).thenReturn(true);
-        when(categoryRepository.existsByCategoryName(any())).thenReturn(true);
+        when(categoryRepository.existsByCategoryName(any())).thenReturn(true,false,true);
         sut.createAll(names);
-        verify(categoryRepository, times(0 )).saveAndFlush(any());
+        verify(categoryRepository, times(1 )).saveAndFlush(any());
 
     }
 
