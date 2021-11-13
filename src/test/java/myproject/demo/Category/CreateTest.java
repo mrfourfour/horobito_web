@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -44,6 +46,21 @@ public class CreateTest {
         verify(categoryRepository, times(1 )).saveAndFlush(any());
 
     }
+
+    @DisplayName("Create Test 3. Abnormal Condition : Title length == 0")
+    @Test
+    public void test3(){
+        CategoryService sut = new CategoryService(categoryRepository);
+
+        List<String> names = Arrays.asList("");
+
+        when(categoryRepository.existsByCategoryName(any())).thenReturn(false);
+        sut.createAll(names);
+        verify(categoryRepository, times(0 )).saveAndFlush(any());
+
+    }
+
+
 
 
 }
