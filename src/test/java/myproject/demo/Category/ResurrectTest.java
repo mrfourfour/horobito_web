@@ -35,9 +35,24 @@ public class ResurrectTest {
         Optional<Category> sutObject = categoryRepository.findById(1L);
         assertTrue(sutObject.isPresent());
         assertTrue(sutObject.get().isDeleted());
-        sutService.create("c1");
+        sutService.resurrect("c1");
 
-        sutObject.get().resurrect();
+                assertFalse(sutObject.get().isDeleted());
+
+    }
+
+    @DisplayName("Resurrect test 2. Abnormal Condition : Not  Deleted")
+    @Test
+    public void test2(){
+
+
+        CategoryService sutService = new CategoryService(categoryRepository);
+
+        Optional<Category> sutObject = categoryRepository.findById(2L);
+        assertTrue(sutObject.isPresent());
+        assertFalse(sutObject.get().isDeleted());
+
+        sutService.resurrect("c2");
         assertFalse(sutObject.get().isDeleted());
 
     }
