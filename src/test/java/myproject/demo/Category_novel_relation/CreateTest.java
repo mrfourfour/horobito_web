@@ -5,6 +5,7 @@ import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.service.UserService;
 import myproject.demo.category.service.CategoryDto;
 import myproject.demo.category.service.CategoryService;
+import myproject.demo.category_novel.domain.CategoryNovelRelationId;
 import myproject.demo.category_novel.domain.CategoryNovelRelationRepository;
 import myproject.demo.category_novel.service.CategoryNovelRelationService;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +52,35 @@ public class CreateTest {
         dtoList.add(dto1);
         dtoList.add(dto2);
         dtoList.add(dto3);
+
+        sut.create(1L, dtoList);
+        verify(relationRepository, times(3)).existsById(any());
+        verify(relationRepository, times(1)).saveAllAndFlush(any());
+
+    }
+
+    @DisplayName("Create test 1-2. Normal Condition : something already exist")
+    @Test
+    public void test2(){
+        CategoryNovelRelationService sut = new CategoryNovelRelationService(
+                relationRepository,
+                userService,
+                novelService,
+                categoryService
+        );
+
+        CategoryDto dto1 = new CategoryDto(2L, "c2");
+        CategoryDto dto2 = new CategoryDto(3L, "c3");
+        CategoryDto dto3 = new CategoryDto(4L, "c4");
+        List<CategoryDto> dtoList = new LinkedList<>();
+        dtoList.add(dto1);
+        dtoList.add(dto2);
+        dtoList.add(dto3);
+
+        when(relationRepository.existsById(
+                CategoryNovelRelationId.create(2L, 1L)
+        )).thenReturn(true);
+
 
         sut.create(1L, dtoList);
         verify(relationRepository, times(3)).existsById(any());
