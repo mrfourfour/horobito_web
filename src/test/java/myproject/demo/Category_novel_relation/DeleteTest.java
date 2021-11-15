@@ -64,6 +64,31 @@ public class DeleteTest {
 
     }
 
+    @DisplayName("Delete test 2. Abnormal Condition : novel or category doesn't exist")
+    @Test
+    public void test2(){
+
+
+        CategoryNovelRelationService sut
+                = new CategoryNovelRelationService(
+                relationRepository,
+                userService,
+                new NovelService(userService, novelRepository),
+                new CategoryService(categoryRepository)
+        );
+
+        Optional<CategoryNovelRelation> relation1
+                = relationRepository.findById(
+                CategoryNovelRelationId.create(1L, 0L));
+
+        Optional<CategoryNovelRelation> relation2
+                = relationRepository.findById(
+                CategoryNovelRelationId.create(0L, 1L));
+
+        Assertions.assertFalse(relation1.isPresent());
+        Assertions.assertFalse(relation2.isPresent());
+    }
+
 
 
 }
