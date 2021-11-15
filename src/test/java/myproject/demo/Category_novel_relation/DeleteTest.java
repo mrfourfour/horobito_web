@@ -20,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 public class DeleteTest {
@@ -87,6 +89,40 @@ public class DeleteTest {
 
         Assertions.assertFalse(relation1.isPresent());
         Assertions.assertFalse(relation2.isPresent());
+    }
+
+    @DisplayName("Delete test 3. Abnormal Condition : novel or category is already deleted")
+    @Test
+    public void test3(){
+
+
+        CategoryNovelRelationService sut
+                = new CategoryNovelRelationService(
+                relationRepository,
+                userService,
+                new NovelService(userService, novelRepository),
+                new CategoryService(categoryRepository)
+        );
+
+        Optional<CategoryNovelRelation> relation1
+                = relationRepository.findById(
+                CategoryNovelRelationId.create(1L, 1L));
+
+        Optional<CategoryNovelRelation> relation2
+                = relationRepository.findById(
+                CategoryNovelRelationId.create(2L, 1L));
+
+
+        Assertions.assertFalse(relation1.get().checkDeleted());
+        Assertions.assertFalse(relation2.get().checkDeleted());
+
+        relation1.ifPresent(CategoryNovelRelation::delete);
+        relation2.ifPresent(CategoryNovelRelation::delete);
+
+        Assertions.assertTrue(relation1.get().checkDeleted());
+        Assertions.assertTrue(relation2.get().checkDeleted());
+
+        assertThrows(IllegalArgumentException.class, ()-> sut.delete(1L, 3L));
     }
 
 
