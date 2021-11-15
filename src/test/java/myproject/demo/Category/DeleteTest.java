@@ -53,4 +53,16 @@ public class DeleteTest {
 
         assertThrows(IllegalArgumentException.class, ()->sutService.delete(1L));
     }
+
+    @DisplayName("Delete test 3. Abnormal Condition : Not exist")
+    @Test
+    public void test3(){
+
+
+        CategoryService sutService = new CategoryService(categoryRepository);
+
+        Optional<Category> sutObject = categoryRepository.findById(10L);
+
+        assertThrows(IllegalArgumentException.class, ()->sutService.delete(1L));
+    }
 }
