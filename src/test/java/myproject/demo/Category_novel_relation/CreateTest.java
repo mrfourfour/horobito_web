@@ -141,4 +141,36 @@ public class CreateTest {
 
 
     }
+
+    @DisplayName("Create test 3. Abnormal Condition : novel doesn't exist")
+    @Test
+    public void test4(){
+
+        CategoryNovelRelationService sut = new CategoryNovelRelationService(
+                relationRepository,
+                userService,
+                new NovelService(userService, novelRepository),
+                categoryService
+        );
+
+        CategoryDto dto1 = new CategoryDto(2L, "c2");
+        CategoryDto dto2 = new CategoryDto(3L, "c3");
+        CategoryDto dto3 = new CategoryDto(4L, "c4");
+        List<CategoryDto> dtoList = new LinkedList<>();
+        dtoList.add(dto1);
+        dtoList.add(dto2);
+        dtoList.add(dto3);
+
+        Novel novel = NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+
+        when(novelRepository.existsById(any())).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, ()-> sut.create(1L, dtoList));
+
+
+
+    }
 }
