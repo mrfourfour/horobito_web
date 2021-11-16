@@ -6,6 +6,7 @@ import myproject.demo.Novel.domain.Novel;
 import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.service.UserService;
+import myproject.demo.category.domain.CategoryRepository;
 import myproject.demo.category.service.CategoryDto;
 import myproject.demo.category.service.CategoryService;
 import myproject.demo.category_novel.domain.CategoryNovelRelationId;
@@ -39,6 +40,8 @@ public class CreateTest {
     @Mock
     NovelRepository novelRepository;
 
+    @Mock
+    CategoryRepository categoryRepository;
 
     @Mock
     CategoryNovelRelationRepository relationRepository;
@@ -51,7 +54,8 @@ public class CreateTest {
                 relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                categoryService
+                categoryService,
+                categoryRepository
         );
 
         CategoryDto dto1 = new CategoryDto(2L, "c2");
@@ -81,7 +85,8 @@ public class CreateTest {
                 relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                categoryService
+                categoryService,
+                categoryRepository
         );
 
         CategoryDto dto1 = new CategoryDto(2L, "c2");
@@ -117,7 +122,8 @@ public class CreateTest {
                 relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                categoryService
+                categoryService,
+                categoryRepository
         );
 
         CategoryDto dto1 = new CategoryDto(2L, "c2");
@@ -150,7 +156,8 @@ public class CreateTest {
                 relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                categoryService
+                categoryService,
+                categoryRepository
         );
 
         CategoryDto dto1 = new CategoryDto(2L, "c2");

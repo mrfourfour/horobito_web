@@ -48,7 +48,8 @@ public class DeleteTest {
                         relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                new CategoryService(categoryRepository)
+                new CategoryService(categoryRepository),
+                categoryRepository
         );
 
         Optional<CategoryNovelRelation> relation
@@ -76,7 +77,8 @@ public class DeleteTest {
                 relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                new CategoryService(categoryRepository)
+                new CategoryService(categoryRepository),
+                categoryRepository
         );
 
         Optional<CategoryNovelRelation> relation1
@@ -101,7 +103,8 @@ public class DeleteTest {
                 relationRepository,
                 userService,
                 new NovelService(userService, novelRepository),
-                new CategoryService(categoryRepository)
+                new CategoryService(categoryRepository),
+                categoryRepository
         );
 
         Optional<CategoryNovelRelation> relation1
