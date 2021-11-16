@@ -1,6 +1,7 @@
 package myproject.demo.Episode;
 
 import myproject.demo.Episode.domain.Episode;
+import myproject.demo.Episode.domain.EpisodeId;
 import myproject.demo.Episode.domain.EpisodeRepository;
 import myproject.demo.Episode.service.EpisodeService;
 import myproject.demo.Novel.domain.NovelRepository;
@@ -18,8 +19,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -63,11 +65,17 @@ public class DeleteTest {
         // 소설 작가
         when(userService.findUserByUserId(any())).thenReturn(userDto);
 
-
         sut.delete(testNovelId, testEpisodeNum);
 
 
+        Optional<Episode> sutObject
+                = episodeRepository.findById(EpisodeId.create(testNovelId, testEpisodeNum));
+        assertFalse(sutObject.isEmpty());
+        assertFalse(sutObject.get().checkDeleted());
 
+        sutObject.get().delete();
+
+        assertTrue(sutObject.get().checkDeleted());
 
     }
 }
