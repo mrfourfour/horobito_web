@@ -78,4 +78,46 @@ public class DeleteTest {
         assertTrue(sutObject.get().checkDeleted());
 
     }
+
+    @DisplayName("Delete test 2. abnormal Condition: novel or episode doesn't exist or already deleted ")
+    @Test
+    public void test2() {
+        EpisodeService sut
+                = new EpisodeService(
+                new NovelService(userService, novelRepository),
+                userService,
+                episodeRepository
+        );
+
+        Long testNovelId = 1L; // author : 1L
+        int testEpisodeNum = 1;
+        UserDto userDto = new UserDto(1L, "user1");
+
+        //요청한 유저
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        // 소설 작가
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        Long nonExistNovelId = -1L;
+        Long deletedNovelId = 3L;
+        int nonExistEpisodeNum = -1;
+
+        Long existNovelId = 1L;
+        int deletedEpisodeNum = 2;
+
+
+        // novel : x
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(nonExistNovelId, testEpisodeNum));
+
+        // novel : deleted
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(deletedNovelId, testEpisodeNum));
+
+        //episode: x
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(existNovelId, nonExistEpisodeNum));
+
+        //episode: deleted
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(existNovelId, deletedEpisodeNum));
+
+    }
+
 }
