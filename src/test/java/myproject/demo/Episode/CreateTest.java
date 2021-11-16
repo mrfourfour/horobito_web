@@ -92,4 +92,26 @@ public class CreateTest {
         assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId,"episdoe content", "1"));
 
     }
+
+    @DisplayName("Create test 3. abnormal Condition : request user != author")
+    @Test
+    public void test3() {
+        EpisodeService sut
+                = new EpisodeService(
+                new NovelService(userService, novelRepository),
+                userService,
+                episodeRepository
+        );
+
+        UserDto requestUser = new UserDto(2L, "user1");
+        UserDto author = new UserDto(1L, "user1");
+
+        // 요청자 2L: 작가 : 1L.
+        when(userService.findLoggedUser()).thenReturn(requestUser);
+        when(userService.findUserByUserId(any())).thenReturn(author);
+
+
+        assertThrows(IllegalArgumentException.class, ()->sut.create(1L,"episdoe content", "1"));
+
+    }
 }
