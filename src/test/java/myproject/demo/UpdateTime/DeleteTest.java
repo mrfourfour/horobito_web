@@ -70,5 +70,30 @@ public class DeleteTest {
 
     }
 
+    @DisplayName("Delete test 2. abnormal Condition: novel doesn't exist or already deleted ")
+    @Test
+    public void test2() {
+        UpdateTimeService sut = new UpdateTimeService(
+                updateTimeRepository, new NovelService(userService, novelRepository), userService);
+
+        UserDto userDto = new UserDto(1L, "user1");
+
+        //요청한 유저
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        // 소설 작가
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        Long nonExistNovelId = -1L;
+        Long deletedNovelId = 3L;
+
+        // novel : x
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(nonExistNovelId));
+
+        // novel : deleted
+        assertThrows(IllegalArgumentException.class, ()->sut.delete(deletedNovelId));
+
+
+    }
+
 
 }
