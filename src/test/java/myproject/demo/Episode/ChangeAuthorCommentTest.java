@@ -80,4 +80,31 @@ public class ChangeAuthorCommentTest {
         assertFalse(sutObject.get().checkDeleted());
 
     }
+
+    @DisplayName("ChangeAuthorComment test 2. Abnormal Condition : requestUser !=author")
+    @Test
+    public void test2() {
+        EpisodeService sut
+                = new EpisodeService(
+                new NovelService(userService, novelRepository),
+                userService,
+                episodeRepository
+        );
+
+        Long testNovelId = 1L; // author : 1L
+        int testEpisodeNum = 1;
+
+        UserDto userDto = new UserDto(2L, "user1");
+
+
+        //요청한 유저 정보
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+        // 임시
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        assertThrows(IllegalArgumentException.class,
+                ()->sut.changeAuthorComment(testNovelId, testEpisodeNum, "newComment"));
+
+    }
 }
