@@ -107,4 +107,45 @@ public class ChangeAuthorCommentTest {
                 ()->sut.changeAuthorComment(testNovelId, testEpisodeNum, "newComment"));
 
     }
+
+    @DisplayName("ChangeAuthorComment test 3. abnormal Condition: novel or episode doesn't exist or already deleted ")
+    @Test
+    public void test3() {
+        EpisodeService sut
+                = new EpisodeService(
+                new NovelService(userService, novelRepository),
+                userService,
+                episodeRepository
+        );
+
+        Long testNovelId = 1L; // author : 1L
+        int testEpisodeNum = 1;
+        UserDto userDto = new UserDto(1L, "user1");
+
+        //요청한 유저
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        // 소설 작가
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        Long nonExistNovelId = -1L;
+        Long deletedNovelId = 3L;
+        int nonExistEpisodeNum = -1;
+
+        Long existNovelId = 1L;
+        int deletedEpisodeNum = 2;
+
+
+        // novel : x
+        assertThrows(IllegalArgumentException.class, ()->sut.changeAuthorComment(nonExistNovelId, testEpisodeNum, "newComment"));
+
+        // novel : deleted
+        assertThrows(IllegalArgumentException.class, ()->sut.changeAuthorComment(deletedNovelId, testEpisodeNum, "newComment"));
+
+        //episode: x
+        assertThrows(IllegalArgumentException.class, ()->sut.changeAuthorComment(existNovelId, nonExistEpisodeNum,"newComment"));
+
+        //episode: deleted
+        assertThrows(IllegalArgumentException.class, ()->sut.changeAuthorComment(existNovelId, deletedEpisodeNum, "newComment"));
+
+    }
 }
