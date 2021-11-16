@@ -21,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +70,26 @@ public class CreateTest {
         List<Episode> list = episodeRepository.findAllByNovelId(testNovelId);
 
         assertEquals(5, list.size());
+
+    }
+
+    @DisplayName("Create test 2. abnormal Condition : novel doesn't exist")
+    @Test
+    public void test2() {
+        EpisodeService sut
+                = new EpisodeService(
+                new NovelService(userService, novelRepository),
+                userService,
+                episodeRepository
+        );
+
+        UserDto userDto = new UserDto(1L, "user1");
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        Long testNovelId = -1L;
+
+        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId,"episdoe content", "1"));
 
     }
 }
