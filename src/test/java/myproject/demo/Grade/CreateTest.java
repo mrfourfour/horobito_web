@@ -86,4 +86,31 @@ public class CreateTest {
         assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId2, premium));
     }
 
+    @DisplayName("Create test 3. abnormal Condition : requestUser!= author")
+    @Test
+    public void test3(){
+        GradeService sut = new GradeService(
+                gradeRepository, new NovelService(userService, novelRepository), userService);
+
+
+        UserDto userDto = new UserDto(1L, "user1");
+        Novel novel = NovelHelper.create(
+                1L, 2L, "title", "descprition,"
+                ,12, "url");
+
+        // loggedUser
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+        // novel info
+        when(novelRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
+
+        when(userService.findUserByUserId(any())).thenReturn(userDto); // just for username
+
+
+        Long testNovelId = 1L;
+        boolean premium = false;
+        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId, premium));
+    }
+
 }
