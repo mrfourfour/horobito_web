@@ -8,6 +8,7 @@ import myproject.demo.Novel.service.NovelDto;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
+import myproject.demo.bookmark.domain.BookMark;
 import myproject.demo.bookmark.domain.BookMarkRepository;
 import myproject.demo.bookmark.service.BookMarkService;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -48,6 +49,26 @@ public class CreateTest {
 
         sut.create(1L);
         verify(bookMarkRepository, times(1)).saveAndFlush(any());
+
+    }
+
+    @DisplayName("Create Test 3. Normal Condition : Re-bookmark")
+    @Test
+    public void test3(){
+        BookMarkService sut = new BookMarkService(userService, novelService, bookMarkRepository);
+
+        UserDto userDto = new UserDto(1L, "user1");
+
+        BookMark bookMark = BookMark.create(1L, 1L);
+
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(bookMarkRepository.findById(any())).thenReturn(Optional.of(bookMark));
+        when(bookMarkRepository.existsById(any())).thenReturn(true);
+        bookMark.delete();
+        assertTrue(bookMark.isDeleted());
+
+        sut.create(1L);
+        assertFalse(bookMark.isDeleted());
 
     }
 
