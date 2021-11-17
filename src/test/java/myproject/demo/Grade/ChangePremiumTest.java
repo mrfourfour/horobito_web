@@ -17,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +64,33 @@ public class ChangePremiumTest {
 
         Assertions.assertEquals(priorPremium, sutObj.get().getPremium());
 
+
+    }
+
+    @DisplayName("ChangePremium test 2. abnormal Condition : priorPremium == wantedPremium")
+    @Test
+    public void test2() {
+        GradeService sut = new GradeService(
+                gradeRepository, new NovelService(userService, novelRepository), userService);
+
+        Long testGradeId = 1L; // author : 1L
+        UserDto userDto = new UserDto(1L, "user1");
+
+        //요청한 유저
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        // 소설 작가
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        Optional<Grade> sutObj = gradeRepository.findById(testGradeId);
+
+        Assertions.assertTrue(sutObj.isPresent());
+        Assertions.assertFalse(sutObj.get().getDeleted());
+        boolean priorPremium = sutObj.get().getPremium();
+
+
+        Assertions.assertEquals(priorPremium, sutObj.get().getPremium());
+
+        assertThrows(IllegalArgumentException.class, () -> sut.changePremium(testGradeId, priorPremium));
 
 
     }
