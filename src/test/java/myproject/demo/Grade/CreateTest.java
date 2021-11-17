@@ -1,6 +1,8 @@
 package myproject.demo.Grade;
 
 
+import myproject.demo.Novel.NovelHelper;
+import myproject.demo.Novel.domain.Novel;
 import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelDto;
 import myproject.demo.Novel.service.NovelService;
@@ -10,12 +12,16 @@ import myproject.demo.grade.domain.Grade;
 import myproject.demo.grade.domain.GradeRepository;
 import myproject.demo.grade.domain.Premium;
 import myproject.demo.grade.service.GradeService;
+import myproject.demo.updateTime.service.UpdateTimeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,6 +60,30 @@ public class CreateTest {
         sut.create(novelId, premium);
 
         verify(gradeRepository, times(1)).saveAndFlush(any());
+    }
+
+    @DisplayName("Create test 2. abnormal Condition : novel doesn't exist or novel is already deleted")
+    @Test
+    public void test2(){
+        GradeService sut = new GradeService(
+                gradeRepository, new NovelService(userService, novelRepository), userService);
+
+
+        Novel novel = NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+        when(novelRepository.existsById(any())).thenReturn(false);
+        Long testNovelId = -1L;
+        boolean premium = false;
+        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId, premium));
+
+
+        when(novelRepository.existsById(any())).thenReturn(true);
+        novel.delete();
+        when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
+        Long testNovelId2 = 1L;
+        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId2, premium));
     }
 
 }
