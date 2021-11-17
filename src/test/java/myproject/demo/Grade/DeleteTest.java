@@ -93,4 +93,27 @@ public class DeleteTest {
 
 
     }
+
+    @DisplayName("Delete test 3. Abnormal Condition : requestUser !=author")
+    @Test
+    public void test3() {
+        GradeService sut = new GradeService(
+                gradeRepository, new NovelService(userService, novelRepository), userService);
+
+        Long testNovelId = 1L; // author : 1L
+
+        //요청한 유저 정보
+        UserDto userDto = new UserDto(2L, "user1");
+
+
+        //요청한 유저 정보
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+        // 임시 : 작가 이름 검색용
+        when(userService.findUserByUserId(any())).thenReturn(userDto);
+
+        assertThrows(IllegalArgumentException.class,
+                ()->sut.delete(testNovelId));
+
+    }
 }
