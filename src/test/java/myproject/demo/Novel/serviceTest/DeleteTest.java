@@ -40,7 +40,7 @@ public class DeleteTest {
                 Password.create("password"),
                 Authority.create("auth"),
                 LocalDateTime.now(),
-                Gender.valueOf(Strings.toUpperCase("male"))
+                Gender.create(Strings.toUpperCase("male"))
         );
         Novel novel = NovelHelper.create(
                 1L, 1L, "title", "descprition,"
