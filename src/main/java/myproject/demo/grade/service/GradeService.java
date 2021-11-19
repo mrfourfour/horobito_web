@@ -21,9 +21,17 @@ public class GradeService {
     private final NovelService novelService;
 
     @Transactional
-    public void create(Long novelId, boolean premium){
+    public GradeDto create(Long novelId, boolean premium){
         novelService.checkExistenceById(novelId);
-        gradeRepository.save(Grade.create(novelId, Premium.create(premium)));
+        return getGradeDto(gradeRepository.saveAndFlush(Grade.create(novelId, Premium.create(premium))));
+    }
+
+    private GradeDto getGradeDto(Grade grade) {
+        return new GradeDto(grade.getNovelId(), grade.getPremium());
+    }
+
+    private GradeDto getGradeDto(Long novelId, boolean premium) {
+        return new GradeDto(novelId, premium);
     }
 
     @Transactional
@@ -40,11 +48,12 @@ public class GradeService {
     }
 
     @Transactional
-    public void changePremium(Long novelId, boolean premium){
+    public GradeDto changePremium(Long novelId, boolean premium){
         novelService.checkExistenceById(novelId);
         checkExistence(novelId);
         checkPremium(novelId, premium);
         gradeRepository.findById(novelId).get().changePremium(premium);
+        return getGradeDto(novelId, premium);
     }
 
     private void checkPremium(Long novelId, boolean premium) {
@@ -75,5 +84,8 @@ public class GradeService {
     }
 
 
+    public GradeDto getGrade(Long novelId) {
+        return getGradeDto(gradeRepository.findById(novelId).get());
 
+    }
 }

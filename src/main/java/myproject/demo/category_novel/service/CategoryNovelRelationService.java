@@ -4,6 +4,7 @@ package myproject.demo.category_novel.service;
 import lombok.RequiredArgsConstructor;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.service.UserService;
+import myproject.demo.category.service.CategoryDto;
 import myproject.demo.category.service.CategoryService;
 import myproject.demo.category_novel.domain.CategoryNovelRelation;
 import myproject.demo.category_novel.domain.CategoryNovelRelationId;
@@ -11,7 +12,6 @@ import myproject.demo.category_novel.domain.CategoryNovelRelationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Table;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,14 +28,14 @@ public class CategoryNovelRelationService {
     private final CategoryService categoryService;
 
     @Transactional
-    public void create(Long novelId, List<Long> categoryIds) {
+    public void create(Long novelId, List<CategoryDto> categoryDtos) {
         List<CategoryNovelRelation> relations
-                = categoryIds
+                = categoryDtos
                 .stream()
-                .filter(categoryId ->
-                        !relationRepository.existsById(CategoryNovelRelationId.create(categoryId, novelId)))
-                .map(categoryId -> CategoryNovelRelation.create(categoryId, novelId)).collect(Collectors.toList());
-        relationRepository.saveAll(relations);
+                .filter(categoryDto->
+                        !relationRepository.existsById(CategoryNovelRelationId.create(categoryDto.getCategoryId(), novelId)))
+                .map(categoryDto -> CategoryNovelRelation.create(categoryDto.getCategoryId(), novelId)).collect(Collectors.toList());
+        relationRepository.saveAllAndFlush(relations);
     }
 
     @Transactional
@@ -44,6 +44,12 @@ public class CategoryNovelRelationService {
         checkExistence(relation);
         checkAlreadyDeleted(relation.get());
         relation.get().delete();
+    }
+
+    @Transactional
+    public void update(Long novelId, List<CategoryDto> categoryDtos) {
+        relationRepository.deleteCategoryNovelRelationsByNovelId(novelId);
+        create(novelId, categoryDtos);
     }
 
     public List<Long> findByCategoryIds(List<Long> categoryIds){
@@ -59,8 +65,8 @@ public class CategoryNovelRelationService {
                 .map(categoryNovelRelation -> categoryNovelRelation.get().getNovelId())
                 .collect(Collectors.toList());
     }
-    
-    
+
+
 
     private void checkAlreadyDeleted(CategoryNovelRelation relation) {
         if (relation.checkDeleted()){
@@ -75,5 +81,9 @@ public class CategoryNovelRelationService {
         }
     }
 
-
+    public List<Long> findCategoryIdsByNovelId(Long novelId) {
+        return relationRepository
+                .findAllByNovelIdAndDeleted(novelId, false).stream()
+                .map(CategoryNovelRelation::getCategoryId).collect(Collectors.toList());
+    }
 }

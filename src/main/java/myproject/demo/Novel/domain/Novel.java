@@ -1,11 +1,14 @@
 package myproject.demo.Novel.domain;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.util.Strings;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @RequiredArgsConstructor
 public class Novel {
 
@@ -25,22 +28,26 @@ public class Novel {
     @Embedded
     private Age age;
 
+    @Embedded
+    CoverImageUrl coverImageUrl;
+
 
 
 
     private boolean deleted;
 
-    private Novel(Title title, Description description, AuthorId authorId, Age age) {
+    private Novel(Title title, Description description, AuthorId authorId, Age age, CoverImageUrl coverImageUrl) {
         this.title = title;
         this.description = description;
         this.authorId = authorId;
         this.deleted = false;
         this.age = age;
+        this.coverImageUrl = coverImageUrl;
 
     }
 
-    public static Novel create( Title title, Description description, AuthorId authorId, Age age) {
-        return new Novel(title, description, authorId, age);
+    public static Novel create( Title title, Description description, AuthorId authorId, Age age, CoverImageUrl coverImageUrl) {
+        return new Novel(title, description, authorId, age, coverImageUrl);
     }
 
     public boolean checkDeleted() {
@@ -51,10 +58,11 @@ public class Novel {
         this.deleted = true;
     }
 
-    public void change(String title, String description, int age) {
+    public void change(String title, String description, int age, String coverImageUrl) {
         this.title = Title.create(title);
         this.description = Description.create(description);
         this.age = Age.create(age);
+        this.coverImageUrl = CoverImageUrl.create(coverImageUrl);
     }
 
     public String getTitle() {
@@ -71,6 +79,10 @@ public class Novel {
 
     public int getAge(){
         return this.age.getAge();
+    }
+
+    public String getCoverImageUrl(){
+        return this.coverImageUrl.getUrl();
     }
 
 

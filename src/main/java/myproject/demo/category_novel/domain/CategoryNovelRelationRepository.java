@@ -14,6 +14,8 @@ public interface CategoryNovelRelationRepository extends JpaRepository<CategoryN
 
     List<Optional<CategoryNovelRelation>> findByNovelIdIn(List<Long> novelIds );
 
-    List<CategoryNovelRelation> findAllByNovelId(Long id);
+    List<CategoryNovelRelation> findAllByNovelIdAndDeleted(Long id, boolean deleted);
+
+    void deleteCategoryNovelRelationsByNovelId(Long novelId);
 
 }

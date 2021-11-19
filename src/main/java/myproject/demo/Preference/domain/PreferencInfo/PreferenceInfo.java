@@ -24,6 +24,7 @@ public class PreferenceInfo {
     private PreferenceInfo(Long novelId, Long userId, Long episodeId) {
         this.novelId = novelId;
         this.userId = userId;
+        this.episodeId = episodeId;
         this.deleted = false;
     }
 
