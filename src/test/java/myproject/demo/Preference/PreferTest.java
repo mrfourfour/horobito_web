@@ -1,6 +1,10 @@
 package myproject.demo.Preference;
 
 
+import myproject.demo.Episode.domain.AuthorComment;
+import myproject.demo.Episode.domain.ContentURL;
+import myproject.demo.Episode.domain.Episode;
+import myproject.demo.Episode.domain.EpisodeRepository;
 import myproject.demo.Episode.service.EpisodeService;
 import myproject.demo.Novel.NovelHelper;
 import myproject.demo.Novel.domain.Novel;
@@ -48,6 +52,9 @@ public class PreferTest {
 
     @Mock
     NovelRepository novelRepository;
+
+    @Mock
+    EpisodeRepository episodeRepository;
 
 
     @DisplayName("Prefer test 1. Normal Condition : new preference")
@@ -130,6 +137,85 @@ public class PreferTest {
 
         assertEquals(1, priorCount+1);
         assertFalse(info.checkDeleted());
+
+    }
+
+    @DisplayName("Prefer test 2. abnormal Condition : novel or episode Already Deleted or non exist")
+    @Test
+    public void test3(){
+        PreferenceService sut
+                = new PreferenceService(
+                new NovelService(userService, novelRepository),
+                new EpisodeService(novelService, userService, episodeRepository),
+                userService,
+                infoRepository,
+                countRepository
+        );
+        UserDto userDto = new UserDto(1L, "user1");
+        NovelDto novelDto = new NovelDto(
+                1L, 1L, "title", "descprition,"
+                , "author", "url", 1, false);
+        Novel novel;
+
+        Long novelId = 1L;
+        Long userId = 1L;
+        int episodeId = 1;
+
+        // 1. novel non exist
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(countRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.existsById(any())).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, ()->sut.prefer(novelId, episodeId));
+
+        // 2. novel already deleted
+        novel =  NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+        novel.delete();
+        assertTrue(novel.checkDeleted());
+
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(countRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
+
+        assertThrows(IllegalArgumentException.class, ()->sut.prefer(novelId, episodeId));
+
+        // 3. episode non exist
+        novel =  NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(countRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
+
+        when(episodeRepository.existsById(any())).thenReturn(false);
+        assertThrows(IllegalArgumentException.class, ()->sut.prefer(novelId, episodeId));
+
+        // 4. episode already deleted
+        novel =  NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+        Episode episode = Episode.create(
+                1L,
+                1,
+                AuthorComment.create("A"),
+                ContentURL.create("a"));
+        episode.delete();
+
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(countRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.existsById(any())).thenReturn(true);
+        when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
+
+        when(episodeRepository.existsById(any())).thenReturn(true);
+        when(episodeRepository.findById(any())).thenReturn(Optional.of(episode));
+        assertThrows(IllegalArgumentException.class, ()->sut.prefer(novelId, episodeId));
 
     }
 }
