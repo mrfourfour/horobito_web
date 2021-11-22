@@ -78,4 +78,41 @@ public class CancelTest {
 
     }
 
+    @DisplayName("Cancel test 2. abnormal Condition: already cancel or non prefer yet")
+    @Test
+    public void test2() {
+        PreferenceService sut
+                = new PreferenceService(
+                novelService,
+                episodeService,
+                userService,
+                infoRepository,
+                countRepository
+        );
+        UserDto userDto = new UserDto(1L, "user1");
+        Long novelId = 1L;
+        Long userId = 1L;
+        int episodeId = 1;
+        PreferenceCount count = PreferenceCount.create(novelId, episodeId, 1L);
+        PreferenceInfo info = PreferenceInfo.create(novelId, userId, episodeId);
+
+        Long priorCount = count.getCount();
+        assertFalse(info.checkDeleted());
+
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+        //for <checkCountExistence>
+        when(countRepository.existsById(any())).thenReturn(true);
+
+        // 1. non prefer yet
+        when(infoRepository.existsById(any())).thenReturn(false);
+        assertThrows(IllegalArgumentException.class, ()-> sut.cancel(novelId, episodeId));
+
+        // 2. already cancel
+        when(infoRepository.existsById(any())).thenReturn(true);
+        when(infoRepository.findById(any())).thenReturn(Optional.of(info));
+        info.delete();
+        assertThrows(IllegalArgumentException.class, ()-> sut.cancel(novelId, episodeId));
+    }
+
 }
