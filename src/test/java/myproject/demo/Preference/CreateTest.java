@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -64,5 +65,36 @@ public class CreateTest {
 
         sut.createCount(novelId, episodeId);
         verify(countRepository, times(1)).saveAndFlush(any());
+    }
+
+    @DisplayName("Create test 2. abnormal Condition: already Existence")
+    @Test
+    public void test2(){
+        PreferenceService sut
+                = new PreferenceService(
+                novelService,
+                episodeService,
+                userService,
+                infoRepository,
+                countRepository
+        );
+        UserDto userDto = new UserDto(1L, "user1");
+
+        Long novelId = 1L;
+        int episodeId = 1;
+
+        // Create info
+        when(userService.findLoggedUser()).thenReturn(userDto);
+        when(infoRepository.existsById(any())).thenReturn(true);
+
+        assertThrows(IllegalArgumentException.class,
+                ()->sut.createInfo(novelId, episodeId));
+
+        // Create Count
+        when(countRepository.existsById(any())).thenReturn(true);
+
+        assertThrows(IllegalArgumentException.class,
+                ()->sut.createCount(novelId, episodeId));
+        ;
     }
 }
