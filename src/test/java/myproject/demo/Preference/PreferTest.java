@@ -7,6 +7,7 @@ import myproject.demo.Novel.domain.Novel;
 import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelDto;
 import myproject.demo.Novel.service.NovelService;
+import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfo;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCount;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountRepository;
@@ -21,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -47,12 +48,14 @@ public class PreferTest {
 
     @Mock
     NovelRepository novelRepository;
+
+
     @DisplayName("Prefer test 1. Normal Condition : new preference")
     @Test
     public void test1(){
         PreferenceService sut
                 = new PreferenceService(
-                new NovelService(userService, novelRepository),
+                novelService,
                 episodeService,
                 userService,
                 infoRepository,
@@ -73,8 +76,6 @@ public class PreferTest {
 
         when(userService.findLoggedUser()).thenReturn(userDto);
         when(countRepository.existsById(any())).thenReturn(true);
-        when(novelRepository.existsById(any())).thenReturn(true);
-        when(novelRepository.findById(anyLong())).thenReturn(Optional.of(novel));
         when(infoRepository.existsById(any())).thenReturn(false);
         when(countRepository.findById(any())).thenReturn(Optional.of(count));
 
@@ -82,6 +83,53 @@ public class PreferTest {
 
         verify(infoRepository, times(1)).save(any());
         assertEquals(1, priorCount+1);
+
+    }
+
+    @DisplayName("Prefer test 2. Normal Condition : re - preference")
+    @Test
+    public void test2(){
+        PreferenceService sut
+                = new PreferenceService(
+                novelService,
+                episodeService,
+                userService,
+                infoRepository,
+                countRepository
+        );
+        UserDto userDto = new UserDto(1L, "user1");
+        NovelDto novelDto = new NovelDto(
+                1L, 1L, "title", "descprition,"
+                , "author", "url", 1, false);
+        Novel novel = NovelHelper.create(
+                1L, 1L, "title", "descprition,"
+                ,12, "url");
+
+        Long novelId = 1L;
+        Long userId = 1L;
+        int episodeId = 1;
+        PreferenceCount count = PreferenceCount.create(novelId, episodeId, 0L);
+        PreferenceInfo info = PreferenceInfo.create(novelId,userId, episodeId);
+        info.delete();
+
+        assertTrue(info.checkDeleted());
+        Long priorCount = count.getCount();
+
+
+        when(userService.findLoggedUser()).thenReturn(userDto);
+
+        //for <checkCountExistence>
+        when(countRepository.existsById(any())).thenReturn(true);
+
+        when(infoRepository.existsById(any())).thenReturn(true);
+        when(infoRepository.findById(any())).thenReturn(Optional.of(info));
+
+        when(countRepository.findById(any())).thenReturn(Optional.of(count));
+
+        sut.prefer(novelId, episodeId);
+
+        assertEquals(1, priorCount+1);
+        assertFalse(info.checkDeleted());
 
     }
 }
