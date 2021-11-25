@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.util.StringJoiner;
 
 @Entity
 @Getter
@@ -33,5 +32,19 @@ public class UpdateTime {
 
     public void update(){
         this.updateTime = LocalDateTime.now();
+    }
+
+    public void delete(){
+        if (this.deleted){
+            throw new IllegalArgumentException();
+        }
+        this.deleted = true;
+    }
+
+    public void resurrect(){
+        if (!this.deleted){
+            throw new IllegalArgumentException();
+        }
+        this.deleted = false;
     }
 }
