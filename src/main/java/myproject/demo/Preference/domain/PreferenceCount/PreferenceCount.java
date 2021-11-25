@@ -1,11 +1,14 @@
 package myproject.demo.Preference.domain.PreferenceCount;
 
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@IdClass(PreferenceCountId.class)
+@Getter
 @NoArgsConstructor
 public class PreferenceCount {
 
@@ -13,18 +16,21 @@ public class PreferenceCount {
     private Long novelId;
 
     @Id
-    private Long episodeId;
+    private int episodeId;
 
     @Embedded
     private Count count;
 
-    private PreferenceCount(Long novelId, Long episodeId, Long count ) {
+    private boolean deleted;
+
+    private PreferenceCount(Long novelId, int episodeId, Long count ) {
         this.novelId = novelId;
         this.episodeId = episodeId;
         this.count = Count.create(count);
+        this.deleted= false;
     }
 
-    public static PreferenceCount create(Long novelId, Long episodeId, Long count ){
+    public static PreferenceCount create(Long novelId, int episodeId, Long count ){
         return new PreferenceCount(novelId, episodeId, count);
     }
 
@@ -36,8 +42,21 @@ public class PreferenceCount {
         this.count = Count.create(getCount()-1L);
     }
 
-    public Long getEpisodeId() {
+    public int getEpisodeId() {
         return this.episodeId;
+    }
+
+    public void delete(){
+        if (this.deleted){
+            throw new IllegalArgumentException();
+        }
+        this.deleted = true;
+    }
+    public void resurrect(){
+        if (!this.deleted){
+            throw new IllegalArgumentException();
+        }
+        this.deleted = false;
     }
 
     public Long getNovelId() {
