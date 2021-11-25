@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 import myproject.demo.KeyCloak.service.Token;
 import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.KeyCloak.service.TokenRequest;
-import myproject.demo.User.domain.*;
+import myproject.demo.User.domain.user.*;
 import org.bouncycastle.util.Strings;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -23,29 +23,33 @@ public class UserService {
 
     private final UsernameDuplicateChecker usernameDuplicateChecker;
 
+    private final LoggedUserInfo loggedUserInfo;
     public Token login(String username, String password){
         TokenRequest tokenRequest
                 = TokenRequest.create(username, password);
         return tokenProvider.issue(tokenRequest);
+
     }
 
-    public void signUp(String username, String password, String auth, LocalDateTime birthDay, String gender) {
+    @Transactional
+    public void signUp(String username, String password, String auth, LocalDate birthDay, String gender) {
         checkDuplicateUser(username);
         TokenRequest tokenRequest
                 = TokenRequest.create(username, password);
         tokenProvider.signUp(tokenRequest);
-        save(username, password, auth, birthDay, gender);
+         saveUser(username, password, auth, birthDay, gender);
+
     }
 
-    public void save(String username, String password, String auth, LocalDateTime birthDay, String gender){
+    public User saveUser(String username, String password, String auth, LocalDate birthDay, String gender){
         User user = User.create(
                 Username.create(username),
                 Password.create(password),
                 Authority.create(auth),
                 birthDay,
-                Gender.valueOf(Strings.toUpperCase(gender))
+                Gender.create(Strings.toUpperCase(gender))
                 );
-        userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
 
@@ -63,7 +67,7 @@ public class UserService {
 
     public UserDto findUserByUsername(String username){
         Optional<User> searchedUser = userRepository.findByUsername(Username.create(username));
-        return getUserDto(searchedUser);
+        return getUserDto(searchedUser.get());
 
     }
 
@@ -71,19 +75,14 @@ public class UserService {
         return findUserByUsername(getLoggedUsername());
     }
 
-    private String getLoggedUsername() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails)principal).getUsername();
-        } else {
-            return principal.toString();
-        }
+    public String getLoggedUsername() {
+        return loggedUserInfo.getLoggedUsername();
     }
 
     public UserDto findUserByUserId(Long userId){
         Optional<User> searchedUser = userRepository.findById(userId);
         checkEmpty(searchedUser);
-        return getUserDto(searchedUser);
+        return getUserDto(searchedUser.get());
     }
 
     private void checkEmpty(Optional<User> searchedUser) {
@@ -92,7 +91,7 @@ public class UserService {
         }
     }
 
-    public UserDto getUserDto(Optional<User> user){
-        return new UserDto(user.get().getUserId(), user.get().getUsername());
+    public UserDto getUserDto(User user){
+        return new UserDto(user.getUserId(), user.getUsername());
     }
 }
