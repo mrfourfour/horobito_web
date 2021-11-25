@@ -2,13 +2,15 @@ package myproject.demo.Novel.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bouncycastle.util.Strings;
+import lombok.Setter;
+
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class Novel {
 
@@ -55,7 +57,17 @@ public class Novel {
     }
 
     public void delete() {
+        if (this.deleted){
+            throw new IllegalArgumentException();
+        }
         this.deleted = true;
+    }
+
+    public void resurrect() {
+        if (!this.deleted){
+            throw new IllegalArgumentException();
+        }
+        this.deleted = false;
     }
 
     public void change(String title, String description, int age, String coverImageUrl) {
