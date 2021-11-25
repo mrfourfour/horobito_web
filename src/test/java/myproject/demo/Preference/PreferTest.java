@@ -204,8 +204,9 @@ public class PreferTest {
         Episode episode = Episode.create(
                 1L,
                 1,
+                "title",
                 AuthorComment.create("A"),
-                ContentURL.create("a"));
+                ContentURL.create("a"), 1);
         episode.delete();
 
         when(userService.findLoggedUser()).thenReturn(userDto);
