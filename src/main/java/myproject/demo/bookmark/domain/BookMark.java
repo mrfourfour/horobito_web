@@ -28,15 +28,21 @@ public class BookMark {
         this.deleted = false;
     }
 
-    public static BookMark create(Long userId, Long novelId){
+    public static BookMark create(Long userId, Long novelId) {
         return new BookMark(userId, novelId);
     }
 
-    public void delete(){
+    public void delete() {
+        if (this.deleted) {
+            throw new IllegalArgumentException();
+        }
         this.deleted = true;
     }
 
-    public void resurrect(){
+    public void resurrect() {
+        if (!this.deleted) {
+            throw new IllegalArgumentException();
+        }
         this.deleted = false;
     }
 }
