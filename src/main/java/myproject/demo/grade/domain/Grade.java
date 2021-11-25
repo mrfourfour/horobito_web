@@ -28,7 +28,7 @@ public class Grade {
         return new Grade(novelId, premium);
     }
 
-    public Long getNovelId(){
+    public Long getId(){
         return this.novelId;
     }
 
