@@ -1,14 +1,11 @@
-package myproject.demo.User.domain;
+package myproject.demo.User.domain.user;
 
 
 import lombok.NoArgsConstructor;
 import org.bouncycastle.util.Strings;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -24,11 +21,12 @@ public class User {
     @Embedded
     private Password password;
 
+    @Embedded
     private Gender gender;
 
     private boolean deleted;
 
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
 
     @Embedded
     private Authority auth;
@@ -36,7 +34,7 @@ public class User {
 
 
 
-    private User(Username username, Password password, Authority auth, LocalDateTime birthDay, Gender gender) {
+    private User(Username username, Password password, Authority auth, LocalDate birthDay, Gender gender) {
         this.username = username;
         this.password = password;
         this.deleted = false;
@@ -45,7 +43,7 @@ public class User {
         this.gender = gender;
     }
 
-    public static User create(Username username, Password password, Authority auth, LocalDateTime birthDay, Gender gender){
+    public static User create(Username username, Password password, Authority auth, LocalDate birthDay, Gender gender){
         return new User(username, password, auth, birthDay, gender);
     }
 
@@ -79,11 +77,11 @@ public class User {
         this.username = Username.create(username);
     }
 
-    public void changeBirthday(LocalDateTime newBirthDay){
+    public void changeBirthday(LocalDate newBirthDay){
         this.birthDay = newBirthDay;
     }
 
-    public LocalDateTime getBirthDay(){
+    public LocalDate getBirthDay(){
         return this.birthDay;
     }
 
@@ -92,7 +90,7 @@ public class User {
     }
 
     public void changeGender(String gender){
-        this.gender = Gender.valueOf(Strings.toUpperCase(gender));
+        this.gender = Gender.create(Strings.toUpperCase(gender));
     }
 
 }
