@@ -4,11 +4,9 @@ package myproject.demo.Novel.serviceTest;
 import myproject.demo.Novel.NovelHelper;
 import myproject.demo.Novel.domain.Novel;
 import myproject.demo.Novel.domain.NovelRepository;
-import myproject.demo.Novel.domain.Title;
 import myproject.demo.Novel.service.DuplicateNovelException;
-import myproject.demo.Novel.service.NovelDto;
 import myproject.demo.Novel.service.NovelService;
-import myproject.demo.User.domain.*;
+import myproject.demo.User.domain.user.*;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
 import org.bouncycastle.util.Strings;
@@ -18,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +41,8 @@ public class CreateTest {
                 Username.create("username"),
                 Password.create("password"),
                 Authority.create("auth"),
-                LocalDateTime.now(),
-                Gender.valueOf(Strings.toUpperCase("male"))
+                LocalDate.now(),
+                Gender.create(Strings.toUpperCase("male"))
         );
 
         NovelService sut = new NovelService(userService, novelRepository);

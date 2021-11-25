@@ -4,7 +4,7 @@ import myproject.demo.Novel.NovelHelper;
 import myproject.demo.Novel.domain.Novel;
 import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelService;
-import myproject.demo.User.domain.*;
+import myproject.demo.User.domain.user.*;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
 import org.bouncycastle.util.Strings;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class DeleteTest {
                 Username.create("username"),
                 Password.create("password"),
                 Authority.create("auth"),
-                LocalDateTime.now(),
+                LocalDate.now(),
                 Gender.create(Strings.toUpperCase("male"))
         );
         Novel novel = NovelHelper.create(

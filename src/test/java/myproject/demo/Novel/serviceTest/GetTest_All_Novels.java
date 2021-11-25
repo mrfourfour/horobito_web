@@ -4,7 +4,7 @@ import myproject.demo.KeyCloak.service.TokenProvider;
 import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelDto;
 import myproject.demo.Novel.service.NovelService;
-import myproject.demo.User.domain.UserRepository;
+import myproject.demo.User.domain.user.UserRepository;
 import myproject.demo.User.service.UserService;
 import myproject.demo.User.service.UsernameDuplicateChecker;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +38,7 @@ public class GetTest_All_Novels {
 
 
     @Autowired
-    UserService userService = new UserService(userRepository, tokenProvider, checker);
+    UserService userService;
 
 
     @DisplayName("GetAllNovels Test 1. Normal Condition")
