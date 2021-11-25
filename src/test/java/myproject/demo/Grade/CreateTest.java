@@ -49,7 +49,7 @@ public class CreateTest {
         UserDto userDto = new UserDto(1L, "user1");
         NovelDto novelDto = new NovelDto(
                 1L, 1L, "title", "descprition,"
-                ,"author", "url", 1, false);
+                , "author", "url", 1, false);
         when(userService.findLoggedUser()).thenReturn(userDto);
         when(novelService.getNovelDto(any())).thenReturn(novelDto);
 
@@ -64,31 +64,31 @@ public class CreateTest {
 
     @DisplayName("Create test 2. abnormal Condition : novel doesn't exist or novel is already deleted")
     @Test
-    public void test2(){
+    public void test2() {
         GradeService sut = new GradeService(
                 gradeRepository, new NovelService(userService, novelRepository), userService);
 
 
         Novel novel = NovelHelper.create(
                 1L, 1L, "title", "descprition,"
-                ,12, "url");
+                , 12, "url");
 
         when(novelRepository.existsById(any())).thenReturn(false);
         Long testNovelId = -1L;
         boolean premium = false;
-        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId, premium));
+        assertThrows(IllegalArgumentException.class, () -> sut.create(testNovelId, premium));
 
 
         when(novelRepository.existsById(any())).thenReturn(true);
         novel.delete();
         when(novelRepository.findById(any())).thenReturn(Optional.of(novel));
         Long testNovelId2 = 1L;
-        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId2, premium));
+        assertThrows(IllegalArgumentException.class, () -> sut.create(testNovelId2, premium));
     }
 
     @DisplayName("Create test 3. abnormal Condition : requestUser!= author")
     @Test
-    public void test3(){
+    public void test3() {
         GradeService sut = new GradeService(
                 gradeRepository, new NovelService(userService, novelRepository), userService);
 
@@ -96,7 +96,7 @@ public class CreateTest {
         UserDto userDto = new UserDto(1L, "user1");
         Novel novel = NovelHelper.create(
                 1L, 2L, "title", "descprition,"
-                ,12, "url");
+                , 12, "url");
 
         // loggedUser
         when(userService.findLoggedUser()).thenReturn(userDto);
@@ -110,7 +110,7 @@ public class CreateTest {
 
         Long testNovelId = 1L;
         boolean premium = false;
-        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId, premium));
+        assertThrows(IllegalArgumentException.class, () -> sut.create(testNovelId, premium));
     }
 
 }
