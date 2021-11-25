@@ -10,5 +10,6 @@ public class NovelDto {
     String description;
     String authorName;
     String coverImageUrl;
+    int age;
     boolean deleted;
 }
