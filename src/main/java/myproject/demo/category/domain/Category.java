@@ -1,11 +1,13 @@
 package myproject.demo.category.domain;
 
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Category {
 
@@ -45,6 +47,10 @@ public class Category {
 
     public String getName(){
         return this.categoryName.getCategoryName();
+    }
+
+    public void resurrect(){
+        this.deleted = false;
     }
 
 }

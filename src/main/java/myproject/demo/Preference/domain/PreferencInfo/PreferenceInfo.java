@@ -3,6 +3,7 @@ package myproject.demo.Preference.domain.PreferencInfo;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @IdClass(PreferenceInfoId.class)
@@ -16,19 +17,22 @@ public class PreferenceInfo {
     private Long userId;
 
     @Id
-    private Long episodeId;
+    private int episodeId;
+
+    private LocalDateTime preferenceTime;
 
 
     private boolean deleted;
 
-    private PreferenceInfo(Long novelId, Long userId, Long episodeId) {
+    private PreferenceInfo(Long novelId, Long userId, int episodeId) {
         this.novelId = novelId;
         this.userId = userId;
         this.episodeId = episodeId;
         this.deleted = false;
+        this.preferenceTime = LocalDateTime.now();
     }
 
-    public static PreferenceInfo create(Long novelId, Long userId, Long episodeId) {
+    public static PreferenceInfo create(Long novelId, Long userId, int episodeId) {
         return new PreferenceInfo(novelId, userId, episodeId);
     }
 
@@ -56,9 +60,14 @@ public class PreferenceInfo {
         return this.userId;
     }
 
-    public Long getEpisodeId() {
+    public int getEpisodeId() {
         return this.episodeId;
     }
+
+    public void renewalPreferenceTime(){
+        this.preferenceTime = LocalDateTime.now();
+    }
+
 
 
 }

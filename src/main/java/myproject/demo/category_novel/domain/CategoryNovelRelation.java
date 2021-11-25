@@ -45,7 +45,11 @@ public class CategoryNovelRelation {
     }
 
     public Long getCategoryId(){
-        return this.novelId;
+        return this.categoryId;
+    }
+
+    public void resurrect(){
+        this.deleted = false;
     }
 
 

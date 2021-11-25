@@ -17,6 +17,9 @@ public class AuthorComment {
     }
 
     public static AuthorComment create(String authorComment){
+        if (authorComment==null || authorComment.length()==0){
+            authorComment = "";
+        }
         return new AuthorComment(authorComment);
     }
 }

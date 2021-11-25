@@ -1,5 +1,6 @@
 package myproject.demo.User.infrastructure;
 
+import lombok.RequiredArgsConstructor;
 import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.User.service.UsernameDuplicateChecker;
 import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class RequestedUsernameDuplicateChecker implements UsernameDuplicateChecker {
-    private Keycloak keycloakAdminClient;
-    private KeycloakSpringBootProperties properties;
+    private final Keycloak keycloakAdminClient;
+    private final KeycloakSpringBootProperties properties;
 
     @Override
     public void checkDuplicate(String username) {

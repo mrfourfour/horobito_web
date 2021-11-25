@@ -8,6 +8,9 @@ import myproject.demo.User.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class EpisodeService {
@@ -19,42 +22,118 @@ public class EpisodeService {
     private final EpisodeRepository episodeRepository;
 
     @Transactional
-    public void create(Long novelId, String content, String authorComment) {
+    public EpisodeDto create(Long novelId, String title, String content, String authorComment, int age){
         novelService.checkExistenceById(novelId);
+        novelService.checkRequesterIdentity(
+                userService.findLoggedUser().getUserId(),
+                novelService.getNovelDto(novelId).getAuthorId());
+
         Episode newEpi = Episode.create(
                 novelId,
                 getEpisodeNum(novelId),
+                title,
                 AuthorComment.create(authorComment),
-                ContentURL.create(enrollContent(content))
+                ContentURL.create(enrollContent(content)),
+                age
         );
-        episodeRepository.save(newEpi);
+        return getEpisodeDto(episodeRepository.saveAndFlush(newEpi));
 
     }
 
+    private EpisodeDto getEpisodeDto(Episode episode) {
+        return new EpisodeDto(
+                episode.getNovelId(),
+                episode.getEpisodeNum(),
+                episode.getTitle(),
+                episode.getURL(),
+                episode.getAuthorComment(),
+                episode.getRegistrationTime(),
+                episode.getAge(),
+                episode.checkDeleted()
+        );
+    }
+
     @Transactional
-    public void changeAuthorComment(Long novelId, Long episodeNum, String newComment) {
+    public void delete(Long novelId, int episodeNum) {
         novelService.checkExistenceById(novelId);
         checkExistenceById(novelId, episodeNum);
-        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
-        checkAlreadyDeleted(episode);
-        episode.changeAuthorComment(newComment);
+        novelService.checkRequesterIdentity(
+                userService.findLoggedUser().getUserId(),
+                novelService.getNovelDto(novelId).getAuthorId());
+
+        episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).ifPresent(
+                selectedEpisode->{
+                    checkAlreadyDeleted(selectedEpisode);
+                    selectedEpisode.delete();
+                });
+
     }
 
     @Transactional
-    public void delete(Long novelId, Long episodeNum) {
+    public void changeAuthorComment(Long novelId, int episodeNum, String newComment) {
+        novelService.checkExistenceById(novelId);
         checkExistenceById(novelId, episodeNum);
-        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
-        checkAlreadyDeleted(episode);
-        episode.delete();
+        novelService.checkRequesterIdentity (
+                userService.findLoggedUser().getUserId(),
+                novelService.getNovelDto(novelId).getAuthorId());
+
+        episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).ifPresent(
+                selectedEpisode->{
+                    checkAlreadyDeleted(selectedEpisode);
+                    selectedEpisode.changeAuthorComment(newComment);
+                });
     }
 
 
     @Transactional
-    public void resurrect(Long novelId, Long episodeNum){
+    public void changeContent(Long novelId, int episodeNum, String content) {
+        novelService.checkExistenceById(novelId);
         checkExistenceById(novelId, episodeNum);
-        Episode episode = episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get();
-        checkAlreadyDeleted(episode);
-        episode.delete();
+        novelService.checkRequesterIdentity (
+                userService.findLoggedUser().getUserId(),
+                novelService.getNovelDto(novelId).getAuthorId());
+
+        episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).ifPresent(
+                selectedEpisode->{
+                    checkAlreadyDeleted(selectedEpisode);
+                    selectedEpisode.changeContent(editContent(episodeNum, content));
+                });
+
+    }
+
+    @Transactional
+    public void changeAge(Long novelId, int episodeNum, int age) {
+        novelService.checkExistenceById(novelId);
+        checkExistenceById(novelId, episodeNum);
+        novelService.checkRequesterIdentity (
+                userService.findLoggedUser().getUserId(),
+                novelService.getNovelDto(novelId).getAuthorId());
+
+        episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).ifPresent(
+                selectedEpisode->{
+                    checkAlreadyDeleted(selectedEpisode);
+                    selectedEpisode.changeAge(age);
+                });
+
+    }
+
+    @Transactional
+    public void resurrect(Long novelId, int episodeNum){
+        novelService.checkExistenceById(novelId);
+        checkJustExistenceById(novelId, episodeNum);
+        novelService.checkRequesterIdentity(
+                userService.findLoggedUser().getUserId(),
+                novelService.getNovelDto(novelId).getAuthorId());
+
+        episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).ifPresent(
+                Episode::resurrect);
+
+    }
+
+    private void checkJustExistenceById(Long novelId, int episodeNum) {
+        if (!(episodeRepository.existsById(EpisodeId.create(novelId, episodeNum)))) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public int getTotalEpisode(Long novelId){
@@ -72,26 +151,54 @@ public class EpisodeService {
         return "";
     }
 
-    private void changeContent(Long novelId, Long episodeNum, String content) {
-        novelService.checkExistenceById(novelId);
-        checkExistenceById(novelId, episodeNum);
-        editContent(episodeNum, content);
+    private String editContent(int episodeNum, String content) {
+        /*
+        change content and get content locker url
+         */
+        return "tempUrl";
     }
 
-    private void editContent(Long episodeNum, String content) {
+    public void checkExistenceById(Long novelId, int episodeNum) {
+        if (!(episodeRepository.existsById(EpisodeId.create(novelId, episodeNum)))
+                || episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get().isDeleted()) {
+            throw new IllegalArgumentException();
+        }
     }
 
-    public void checkExistenceById(Long novelId, Long episodeNum) {
+    private int getEpisodeNum(Long novelId) {
+        if (!episodeRepository.existsByNovelIdAndDeleted(novelId, false)) {
+            return 1;
+        } else {
+            List<Episode> list = episodeRepository.findAllByNovelId(novelId);
+            return list.get(list.size()-1).getEpisodeNum() + 1;
+        }
+    }
+
+    public List<EpisodeDto> findAllByNovelId(Long novelId) {
+        return episodeRepository.findAllByNovelIdAndDeleted(novelId, false)
+                .stream().filter(it-> !it.isDeleted()).map(this::getEpisodeDto).collect(Collectors.toList());
+    }
+
+    public EpisodeDto getEpisode(Long novelId, int episodeNum) {
+        checkJustExistence(novelId, episodeNum);
+        return getEpisodeDto(episodeRepository.findById(EpisodeId.create(novelId, episodeNum)).get());
+    }
+
+    private void checkJustExistence(Long novelId, int episodeNum) {
         if (!(episodeRepository.existsById(EpisodeId.create(novelId, episodeNum)))) {
             throw new IllegalArgumentException();
         }
     }
 
-    private Long getEpisodeNum(Long novelId) {
-        if (!episodeRepository.existsByNovelIdAndDeleted(novelId, false)) {
-            return 1L;
-        } else {
-            return episodeRepository.findTopByNovelIdAndDeleted(novelId, false).get().getEpisodeNum() + 1;
-        }
+    @Transactional
+    public void update(Long novelId, int episodeId, String title, String content, String authorComment, int age) {
+        checkExistenceById(novelId, episodeId);
+        episodeRepository.findById(EpisodeId.create(novelId, episodeId)).get().change(
+                title,
+                authorComment,
+                enrollContent(content),
+                age
+        );
+
     }
 }

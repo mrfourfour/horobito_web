@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,22 @@ public class CategoryService {
         if (!checkAlreadyExistenceByName(name) && checkName(name)){
             categoryRepository.saveAndFlush(Category.create(CategoryName.create(name)));
         };
+        if (checkAlreadyExistenceByName(name)
+                && categoryRepository.findByCategoryName(CategoryName.create(name)).get().isDeleted()
+        ){
+            resurrect(name);
+        }
+
+    }
+
+    public void resurrect(String name) {
+        Optional<Category> category = categoryRepository.findByCategoryName(CategoryName.create(name));
+        category.ifPresent(
+                selectedCategory->{
+                    if(selectedCategory.isDeleted()){
+                        selectedCategory.resurrect();
+                    }}
+        );
     }
 
     private boolean checkName(String name) {
@@ -43,9 +60,12 @@ public class CategoryService {
     @Transactional
     public void delete(Long categoryId) {
         checkExistence(categoryId);
-        Category category = categoryRepository.findById(categoryId).get();
-        checkAlreadyDeleted(category);
-        category.delete();
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        category.ifPresent(selectedCategory -> {
+            checkAlreadyDeleted(selectedCategory.getId());
+            selectedCategory.delete();
+        });
+        categoryRepository.flush();
     }
 
     public List<CategoryDto> findAll() {
@@ -68,13 +88,14 @@ public class CategoryService {
         );
     }
 
-    private void checkAlreadyDeleted(Category category) {
-        if (category.checkDeleted()) {
+    public void checkAlreadyDeleted(Long categoryId) {
+        if (categoryRepository.findById(categoryId).get().isDeleted()) {
             throw new IllegalArgumentException();
         }
     }
 
-    private void checkExistence(Long categoryId) {
+
+    public void checkExistence(Long categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
             throw new IllegalArgumentException();
         }
@@ -89,7 +110,8 @@ public class CategoryService {
 
 
     public List<CategoryDto> findAllByCategoryIds(List<Long> categoryIds) {
-        return categoryIds.stream().map(id->categoryRepository.findByIdAndDeleted(id, false).get())
-                .map(it->getCategoryDto(it)).collect(Collectors.toList());
+        return categoryIds.stream().map(id->categoryRepository.findByIdAndDeleted(id, false))
+                .filter(Optional::isPresent)
+                .map(it->getCategoryDto(it.get())).collect(Collectors.toList());
     }
 }

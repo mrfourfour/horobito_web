@@ -12,15 +12,15 @@ public class ViewCountId implements Serializable {
 
     private Long novelId;
 
-    private Long episodeId;
+    private int episodeId;
 
 
-    private ViewCountId(Long novelId, Long episodeId) {
+    private ViewCountId(Long novelId, int episodeId) {
         this.novelId = novelId;
         this.episodeId = episodeId;
     }
 
-    public static ViewCountId create(Long novelId, Long episodeId){
+    public static ViewCountId create(Long novelId, int episodeId){
         return new ViewCountId(novelId, episodeId);
     }
 
@@ -43,7 +43,7 @@ public class ViewCountId implements Serializable {
         ViewCountId that = (ViewCountId) obj;
 
         if (this.novelId.equals(that.getNovelId())
-                && this.episodeId.equals(that.episodeId)) {
+                && this.episodeId==that.episodeId) {
             return true;
         }
 

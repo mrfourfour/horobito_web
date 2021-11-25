@@ -11,13 +11,13 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 public class ContentURL {
 
-    private String contentURL;
+    private String contentUrl;
 
-    private ContentURL(String contentURL) {
-        this.contentURL = contentURL;
+    private ContentURL(String contentUrl) {
+        this.contentUrl = contentUrl;
     }
 
-    public static ContentURL create(String contentURL){
-        return new ContentURL(contentURL);
+    public static ContentURL create(String contentUrl){
+        return new ContentURL(contentUrl);
     }
 }

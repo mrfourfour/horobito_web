@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,10 +37,24 @@ public class NovelService {
     @Transactional
     public NovelDto editNovel(Long novelId, String title, String description, int age, String url) throws IllegalAccessException {
         checkExistenceById(novelId);
-        Novel novel = novelRepository.findByTitle(Title.create(title)).get();
+        Novel novel = novelRepository.findById(novelId).get();
         checkRequesterIdentity(userService.findLoggedUser().getUserId(), novel.getAuthorId());
         novel.change(title, description, age, url);
         return createNovelDto(novel);
+    }
+
+    @Transactional
+    public void resurrect(Long novelId) {
+        checkJustExistenceById(novelId);
+        Novel novel = novelRepository.findById(novelId).get();
+        checkRequesterIdentity(userService.findLoggedUser().getUserId(), novel.getAuthorId());
+        novel.resurrect();
+    }
+
+    private void checkJustExistenceById(Long novelId) {
+        if (!novelRepository.existsById(novelId)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Transactional
@@ -47,20 +62,21 @@ public class NovelService {
         checkExistenceById(novelId);
         Novel novel = novelRepository.findById(novelId).get();
         checkRequesterIdentity(userService.findLoggedUser().getUserId(), novel.getAuthorId());
-        checkAlreadyDeleted(novel);
         novel.delete();
     }
 
-    private List<NovelDto> getAllNovels(List<Long> novelIds) {
+    public List<NovelDto> getNovelsByNovelIds(List<Long> novelIds) {
         List<NovelDto> novels = novelIds.stream()
                 .map(id->novelRepository.findByIdAndDeleted(id, false))
+                .filter(Optional::isPresent)
                 .map(novel -> createNovelDto(novel.get())).collect(Collectors.toList());
         return novels;
     }
 
-    private List<NovelDto> getNovelsByAge(List<Long> novelIds, int age) {
+    public List<NovelDto> getNovelsByAge(List<Long> novelIds, int age) {
         List<NovelDto> novels = novelIds.stream()
                 .map(id->novelRepository.findByIdAndDeletedAndAgeGreaterThanEqual(id, false, Age.create(age)))
+                .filter(Optional::isPresent)
                 .map(novel -> createNovelDto(novel.get())).collect(Collectors.toList());
         return novels;
     }
@@ -76,14 +92,17 @@ public class NovelService {
         }
     }
 
-    private void checkRequesterIdentity(Long userId, Long authorId) throws IllegalAccessException {
+    public void checkRequesterIdentity(Long userId, Long authorId){
         if (!userId.equals(authorId)) {
-            throw new IllegalAccessException();
+            throw new IllegalArgumentException();
         }
     }
 
     public void checkExistenceById(Long novelId) {
         if (!novelRepository.existsById(novelId)) {
+            throw new IllegalArgumentException();
+        }
+        if (novelRepository.findById(novelId).get().isDeleted()){
             throw new IllegalArgumentException();
         }
     }
@@ -110,6 +129,7 @@ public class NovelService {
                 novel.getDescription(),
                 userService.findUserByUserId(novel.getAuthorId()).getUsername(),
                 novel.getCoverImageUrl(),
+                novel.getAge(),
                 novel.isDeleted()
 
         );
@@ -120,7 +140,7 @@ public class NovelService {
     }
 
     public NovelDto getNovelDto(Long novelId) {
-        checkExistenceById(novelId);
+        checkJustExistenceById(novelId);
         return createNovelDto(novelRepository.findById(novelId).get());
     }
 }
