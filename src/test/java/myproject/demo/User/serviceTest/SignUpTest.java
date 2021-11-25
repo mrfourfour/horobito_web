@@ -3,10 +3,9 @@ package myproject.demo.User.serviceTest;
 
 import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.TokenProvider;
-import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.controller.UserExceptionHandler;
-import myproject.demo.User.domain.Gender;
-import myproject.demo.User.domain.UserRepository;
+import myproject.demo.User.domain.user.UserRepository;
+import myproject.demo.User.service.LoggedUserInfo;
 import myproject.demo.User.service.UserService;
 import myproject.demo.User.service.UsernameDuplicateChecker;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +33,8 @@ public class SignUpTest {
     UsernameDuplicateChecker usernameDuplicateChecker;
 
     @Mock
+    LoggedUserInfo loggedUserInfo;
+    @Mock
     UserExceptionHandler handler;
 
 
@@ -43,14 +43,14 @@ public class SignUpTest {
     @Test
     public void test1(){
 
-        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker, loggedUserInfo);
 
 
         sut.signUp(
                 "test",
                 "t",
                 "t",
-                LocalDateTime.now(),
+                LocalDate.now(),
                 "t");
 
         verify(tokenProvider, times(1)).signUp(any());
@@ -62,7 +62,7 @@ public class SignUpTest {
     @Test
     public void test2(){
 
-        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker, loggedUserInfo);
 
 
         doThrow(new DuplicateUserSignUpException()).when(usernameDuplicateChecker).checkDuplicate(any());
@@ -71,7 +71,7 @@ public class SignUpTest {
                 "test",
                 "t",
                 "t",
-                LocalDateTime.now(),
+                LocalDate.now(),
                "male"));
     }
 

@@ -1,10 +1,9 @@
 package myproject.demo.User.serviceTest;
 
-import myproject.demo.KeyCloak.service.DuplicateUserSignUpException;
 import myproject.demo.KeyCloak.service.TokenProvider;
-import myproject.demo.KeyCloak.service.TokenRequest;
 import myproject.demo.User.controller.UserExceptionHandler;
-import myproject.demo.User.domain.*;
+import myproject.demo.User.domain.user.*;
+import myproject.demo.User.service.LoggedUserInfo;
 import myproject.demo.User.service.UserService;
 import myproject.demo.User.service.UsernameDuplicateChecker;
 import org.bouncycastle.util.Strings;
@@ -13,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -38,18 +37,21 @@ public class FindUserByUsernameTest {
     @Mock
     UserExceptionHandler handler;
 
+    @Mock
+    LoggedUserInfo loggedUserInfo;
+
     @DisplayName(" Find By Username Test 1. normal condition ")
     @Test
     public void test1(){
 
-        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker,loggedUserInfo);
 
         Optional<User> user = Optional.of(User.create(
                 Username.create("user"),
                 Password.create("pwd"),
                 Authority.create("auth"),
-                LocalDateTime.now(),
-                Gender.valueOf(Strings.toUpperCase("male"))
+                LocalDate.now(),
+                Gender.create(Strings.toUpperCase("male"))
         ));
 
         when(userRepository.findByUsername(any())).thenReturn(user);
@@ -62,7 +64,7 @@ public class FindUserByUsernameTest {
     @Test
     public void test2(){
 
-        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker);
+        UserService sut = new UserService(userRepository, tokenProvider, usernameDuplicateChecker, loggedUserInfo);
 
         assertThrows(NullPointerException.class, ()->sut.findUserByUserId(any()));
 
