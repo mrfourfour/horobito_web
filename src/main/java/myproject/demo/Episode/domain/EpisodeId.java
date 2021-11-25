@@ -16,14 +16,14 @@ public class EpisodeId implements Serializable {
 
     private Long novelId;
 
-    private Long episodeNum;
+    private int episodeNum;
 
-    private EpisodeId(Long novelId, Long episodeNum) {
+    private EpisodeId(Long novelId, int episodeNum) {
         this.novelId = novelId;
         this.episodeNum = episodeNum;
     }
 
-    public static EpisodeId create(Long novelId, Long episodeNum){
+    public static EpisodeId create(Long novelId, int episodeNum){
         return new EpisodeId(novelId, episodeNum);
     }
 
@@ -45,7 +45,7 @@ public class EpisodeId implements Serializable {
 
         EpisodeId that = (EpisodeId) obj;
 
-        if (this.novelId.equals(that.novelId) && this.episodeNum.equals(that.episodeNum)) {
+        if (this.novelId.equals(that.novelId) && this.episodeNum==that.episodeNum) {
             return true;
         }
 
