@@ -15,15 +15,15 @@ public class PreferenceCountId implements Serializable {
 
     private Long novelId;
 
-    private Long episodeId;
+    private int episodeId;
 
 
-    private PreferenceCountId(Long novelId, Long episodeId) {
+    private PreferenceCountId(Long novelId, int episodeId) {
         this.novelId = novelId;
         this.episodeId = episodeId;
     }
 
-    public static PreferenceCountId create(Long novelId, Long episodeId){
+    public static PreferenceCountId create(Long novelId, int episodeId){
         return new PreferenceCountId(novelId, episodeId);
     }
 
@@ -46,7 +46,7 @@ public class PreferenceCountId implements Serializable {
         PreferenceCountId that = (PreferenceCountId) obj;
 
         if (this.novelId.equals(that.getNovelId())
-                && this.episodeId.equals(that.episodeId)) {
+                && this.episodeId== that.episodeId) {
             return true;
         }
 
