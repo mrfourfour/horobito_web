@@ -1,4 +1,4 @@
-package myproject.demo.novelManager.controller;
+package myproject.demo.manager.novelManager.controller;
 
 
 import lombok.Value;
