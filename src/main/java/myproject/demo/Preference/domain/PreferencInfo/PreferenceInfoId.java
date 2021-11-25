@@ -16,19 +16,18 @@ public class PreferenceInfoId implements Serializable {
 
     private Long userId;
 
-    private Long episodeId;
-
-    private LocalDateTime preferenceTime;
+    private int episodeId;
 
 
-    private PreferenceInfoId(Long novelId, Long userId, Long episodeId) {
+
+    private PreferenceInfoId(Long novelId, Long userId, int episodeId) {
         this.novelId = novelId;
         this.userId = userId;
         this.episodeId = episodeId;
-        preferenceTime = LocalDateTime.now();
+
     }
 
-    public static PreferenceInfoId create(Long novelId, Long userId, Long episodeId){
+    public static PreferenceInfoId create(Long novelId, Long userId, int episodeId){
         return new PreferenceInfoId(novelId, userId, episodeId);
     }
     @Override
@@ -51,7 +50,7 @@ public class PreferenceInfoId implements Serializable {
 
         if (this.novelId.equals(that.getNovelId())
                 && this.userId.equals(that.userId)
-                && this.episodeId.equals(that.episodeId)) {
+                && this.episodeId==that.episodeId) {
             return true;
         }
 
