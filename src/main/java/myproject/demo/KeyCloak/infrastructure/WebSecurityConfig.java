@@ -29,7 +29,7 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/user/**")
+                .antMatchers("/users/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
