@@ -61,11 +61,11 @@ public class CreateTest {
 
         Long testNovelId = 1L;
 
-        sut.create(testNovelId,"episdoe content", "1");
-        sut.create(testNovelId, "episode content2", null);
-        sut.create(testNovelId, "episode content3", "3");
-        sut.create(testNovelId, "episode content4", "");
-        sut.create(testNovelId, "episode content5", "5");
+        sut.create(testNovelId, "title1","episdoe content", "1",12);
+        sut.create(testNovelId, "title2","episode content2", null,18);
+        sut.create(testNovelId, "title3","episode content3", "3",15);
+        sut.create(testNovelId, "title4","episode content4", "",15);
+        sut.create(testNovelId, "title5","episode content5", "5", 18);
 
         List<Episode> list = episodeRepository.findAllByNovelId(testNovelId);
 
@@ -89,7 +89,7 @@ public class CreateTest {
 
         Long testNovelId = -1L;
 
-        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId,"episdoe content", "1"));
+        assertThrows(IllegalArgumentException.class, ()->sut.create(testNovelId,"title","episdoe content", "1", 15));
 
     }
 
@@ -111,7 +111,7 @@ public class CreateTest {
         when(userService.findUserByUserId(any())).thenReturn(author);
 
 
-        assertThrows(IllegalArgumentException.class, ()->sut.create(1L,"episdoe content", "1"));
+        assertThrows(IllegalArgumentException.class, ()->sut.create(1L,"title","episdoe content", "1", 15));
 
     }
 }
