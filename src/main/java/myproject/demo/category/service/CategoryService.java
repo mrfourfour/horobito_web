@@ -114,4 +114,15 @@ public class CategoryService {
                 .filter(Optional::isPresent)
                 .map(it->getCategoryDto(it.get())).collect(Collectors.toList());
     }
+
+    public Long getCategoryIdByName(String name){
+        Optional<Category> relation =
+                categoryRepository.findByCategoryName(CategoryName.create(name));
+
+        if (relation.isPresent()){
+            return relation.get().getId();
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
 }

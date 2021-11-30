@@ -111,4 +111,9 @@ public class CategoryNovelRelationService {
                 .findAllByNovelIdAndDeleted(novelId, false).stream().filter(it->!it.checkDeleted())
                 .map(CategoryNovelRelation::getCategoryId).collect(Collectors.toList());
     }
+
+    public List<Long> findAllByCategoryId(Long categoryId) {
+        return relationRepository.findAllByCategoryIdAndDeleted(categoryId, false).stream()
+                .map(CategoryNovelRelation::getNovelId).collect(Collectors.toList());
+    }
 }
