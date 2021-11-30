@@ -6,6 +6,7 @@ import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountRepository;
+import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.Preference.service.PreferenceService;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
@@ -57,6 +58,8 @@ public class ViewNovelTest {
     UpdateTimeRepository updateTimeRepository;
     @Autowired
     ViewCountRepository viewCountRepository;
+    @Autowired
+    TotalPreferenceCountRepository totalPreferenceCountRepository;
     @Mock
     UserService userService;
 
@@ -70,7 +73,7 @@ public class ViewNovelTest {
         GradeService gradeService = new GradeService(gradeRepository, novelService, userService);
         EpisodeService episodeService = new EpisodeService(novelService, userService, episodeRepository);
         PreferenceService preferenceService = new PreferenceService(
-                novelService, episodeService, userService, infoRepository, countRepository);
+                novelService, episodeService, userService, infoRepository, countRepository, totalPreferenceCountRepository);
         UpdateTimeService updateTimeService = new UpdateTimeService(
                 updateTimeRepository, novelService, userService);
         BookMarkService bookMarkService = new BookMarkService(userService,novelService,bookMarkRepository);

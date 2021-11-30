@@ -11,6 +11,8 @@ import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCount;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountId;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountRepository;
+ import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCount;
+import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.User.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,17 +35,26 @@ public class PreferenceService {
 
     private final PreferenceCountRepository countRepository;
 
+    private final TotalPreferenceCountRepository totalCountRepository;
+
     @Transactional
     public void createInfo(Long novelId, int episodeId){
         Long userId = userService.findLoggedUser().getUserId();
         checkInfoAlreadyExist(novelId, userId, episodeId);
         infoRepository.saveAndFlush(PreferenceInfo.create(novelId, userId, episodeId));
+
+    }
+
+    @Transactional
+    public void createTotalCount(Long novelId){
+        totalCountRepository.saveAndFlush(TotalPreferenceCount.create(novelId, 0L));
     }
 
     @Transactional
     public void createCount(Long novelId, int episodeId){
         checkCountAlreadyExist(novelId,  episodeId);
         countRepository.saveAndFlush(PreferenceCount.create(novelId,  episodeId, 0L));
+
     }
 
     @Transactional
@@ -63,7 +74,7 @@ public class PreferenceService {
         checkExistenceNovelAndEpisode(novelId, episodeId);
         checkLiked(PreferenceInfoId.create(novelId, userId, episodeId));
         decreasePreferenceCount(novelId, episodeId);
-        infoRepository.findById(PreferenceInfoId.create(novelId, userId, episodeId)).get().delete();
+        deletePreferenceInfo(novelId, episodeId, userId);
     }
 
     @Transactional
@@ -72,8 +83,28 @@ public class PreferenceService {
         NovelDto noveldto = novelService.getNovelDto(novelId);
         novelService.checkRequesterIdentity(userId, noveldto.getAuthorId());
         checkCountExistence(novelId, episodeId);
-        countRepository.findById(PreferenceCountId.create(novelId, episodeId)).get().delete();
+        deletePreferenceCounts(novelId, episodeId);
 
+
+    }
+
+    private void deletePreferenceCounts(Long novelId, int episodeId) {
+        PreferenceCount deletedCount = countRepository.findById(PreferenceCountId.create(novelId, episodeId)).get();
+        deletedCount.delete();
+        totalCountRepository.findById(novelId).ifPresent(
+                selected->
+                    selected.decrease(deletedCount.getCount()) );
+
+
+    }
+
+    @Transactional
+    public void deleteTotalPreference(Long novelId){
+        Long userId = userService.findLoggedUser().getUserId();
+        NovelDto noveldto = novelService.getNovelDto(novelId);
+        novelService.checkRequesterIdentity(userId, noveldto.getAuthorId());
+        totalCountRepository.findById(novelId).ifPresent(
+                TotalPreferenceCount::delete);
     }
 
     @Transactional
@@ -82,8 +113,26 @@ public class PreferenceService {
         NovelDto noveldto = novelService.getNovelDto(novelId);
         novelService.checkRequesterIdentity(userId, noveldto.getAuthorId());
         checkCountExistence(novelId, episodeId);
-        countRepository.findById(PreferenceCountId.create(novelId, episodeId)).get().resurrect();
+        resurrectPreferenceCounts(novelId, episodeId);
 
+
+    }
+
+    @Transactional
+    public void resurrectTotalCount(Long novelId) {
+        Long userId = userService.findLoggedUser().getUserId();
+        NovelDto noveldto = novelService.getNovelDto(novelId);
+        novelService.checkRequesterIdentity(userId, noveldto.getAuthorId());
+        totalCountRepository.findById(novelId).ifPresent(
+                TotalPreferenceCount::resurrect);
+
+    }
+
+    private void resurrectPreferenceCounts(Long novelId, int episodeId) {
+        PreferenceCount resurrectedCount = countRepository.findById(PreferenceCountId.create(novelId, episodeId)).get();
+        resurrectedCount.resurrect();
+        totalCountRepository.findById(novelId).ifPresent(
+                selected-> selected.increase(resurrectedCount.getCount()) );
     }
 
 
@@ -103,7 +152,8 @@ public class PreferenceService {
 
     private void affirmInfo(Long novelId, Long userId, int episodeId) {
         if (infoRepository.existsById(PreferenceInfoId.create(novelId, userId, episodeId))){
-            Optional<PreferenceInfo> info = infoRepository.findById(PreferenceInfoId.create(novelId, userId, episodeId));
+            Optional<PreferenceInfo> info = infoRepository.findById(
+                    PreferenceInfoId.create(novelId, userId, episodeId));
             if (info.get().checkDeleted()){
                 info.get().resurrect();
                 info.get().renewalPreferenceTime();
@@ -115,6 +165,9 @@ public class PreferenceService {
 
     private void checkCountExistence(Long novelId,  int episodeId) {
         if (!countRepository.existsById(PreferenceCountId.create(novelId, episodeId))){
+            throw new IllegalArgumentException();
+        }
+        if (!totalCountRepository.existsById(novelId)){
             throw new IllegalArgumentException();
         }
     }
@@ -135,18 +188,11 @@ public class PreferenceService {
 
     private void decreasePreferenceCount(Long novelId, int episodeId) {
         countRepository.findById(PreferenceCountId.create(novelId,episodeId)).get().decrease();
+        totalCountRepository.findById(novelId).ifPresent(TotalPreferenceCount::decrease);
     }
 
-    public PreferenceCountDto getTotalPreferenceCountByNovelId(Long novelId, List<Integer> episodeIds){
-        Long count = 0L;
-        Iterator<PreferenceCount> counts = countRepository.findAllByNovelIdAndEpisodeIdIn(novelId, episodeIds).iterator();
-        while (counts.hasNext()){
-            PreferenceCount preferenceCount = counts.next();
-            if (!preferenceCount.isDeleted()){
-                count+= preferenceCount.getCount();
-            }
-        }
-        return getPreferenceCountDto(count);
+    public PreferenceCountDto getTotalPreferenceCountByNovelId(Long novelId){
+        return getPreferenceCountDto(totalCountRepository.findById(novelId).get().getTotalCount());
 
     }
 
@@ -198,6 +244,7 @@ public class PreferenceService {
     private void increasePreferenceCount(Long novelId, int episodeId) {
         countRepository.findById(PreferenceCountId.create(novelId,episodeId)).ifPresent(
                 PreferenceCount::increase);
+        totalCountRepository.findById(novelId).ifPresent(TotalPreferenceCount::increase);
     }
 
     private void checkAlreadyLiked(PreferenceInfoId preferenceInfoId) {

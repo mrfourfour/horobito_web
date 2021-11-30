@@ -5,6 +5,7 @@ import myproject.demo.Episode.service.EpisodeService;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountRepository;
+import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.Preference.service.PreferenceService;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
@@ -37,6 +38,9 @@ public class CreateTest {
     @Mock
     PreferenceCountRepository countRepository;
 
+    @Mock
+    TotalPreferenceCountRepository totalPreferenceCountRepository;
+
     @DisplayName("Create test 1. Normal Condition")
     @Test
     public void test1(){
@@ -46,7 +50,8 @@ public class CreateTest {
                 episodeService,
                 userService,
                 infoRepository,
-                countRepository
+                countRepository,
+                totalPreferenceCountRepository
         );
         UserDto userDto = new UserDto(1L, "user1");
 
@@ -76,7 +81,8 @@ public class CreateTest {
                 episodeService,
                 userService,
                 infoRepository,
-                countRepository
+                countRepository,
+                totalPreferenceCountRepository
         );
         UserDto userDto = new UserDto(1L, "user1");
 
