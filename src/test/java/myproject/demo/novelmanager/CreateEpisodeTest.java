@@ -1,5 +1,6 @@
 package myproject.demo.novelmanager;
 
+import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.manager.episodeManager.service.EpisodeManagerService;
 import myproject.demo.Episode.domain.EpisodeRepository;
 import myproject.demo.Episode.service.EpisodeService;
@@ -54,12 +55,25 @@ public class CreateEpisodeTest {
     UpdateTimeRepository updateTimeRepository;
     @Autowired
     ViewCountRepository viewCountRepository;
+    @Autowired
+    TotalPreferenceCountRepository totalPreferenceCountRepository;
     @Mock
     UserService userService;
 
+    @Test
+    public void testCreate() throws IllegalAccessException {
+
+        for(Long novelId =1L; novelId<=30L; novelId++){
+            for (int episode =1; episode<=10; episode++){
+                test1(novelId, episode);
+            }
+        }
+    }
+
+
     @DisplayName("CreateEpisode Test")
     @Test
-    public void test1() throws IllegalAccessException {
+    public void test1(Long novelId, int number) throws IllegalAccessException {
         NovelService novelService = new NovelService(userService, novelRepository);
         CategoryService categoryService = new CategoryService(categoryRepository);
         CategoryNovelRelationService relationService = new CategoryNovelRelationService(
@@ -67,7 +81,7 @@ public class CreateEpisodeTest {
         GradeService gradeService = new GradeService(gradeRepository, novelService, userService);
         EpisodeService episodeService = new EpisodeService(novelService, userService, episodeRepository);
         PreferenceService preferenceService = new PreferenceService(
-                novelService, episodeService, userService, infoRepository, countRepository);
+                novelService, episodeService, userService, infoRepository, countRepository, totalPreferenceCountRepository);
         UpdateTimeService updateTimeService = new UpdateTimeService(
                 updateTimeRepository, novelService, userService);
         BookMarkService bookMarkService = new BookMarkService(userService,novelService,bookMarkRepository);
@@ -90,8 +104,8 @@ public class CreateEpisodeTest {
         when(userService.findLoggedUser()).thenReturn(userDto);
         when(userService.findUserByUserId(any())).thenReturn(userDto);
         System.out.println(
-                sut.createEpisode(14L,"episodeTitle4",
-                        "episodeContent4", "authorComment4 ",12
+                sut.createEpisode(novelId,"episodeTitle" + number,
+                        "episodeContent" + number, "authorComment" + number,12
                 ));
     }
 }
