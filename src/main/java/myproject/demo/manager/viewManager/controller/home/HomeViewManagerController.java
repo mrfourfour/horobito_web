@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/main/top")
 @RequiredArgsConstructor
-public class ViewManagerController {
+public class HomeViewManagerController {
 
     private final HomeViewManagerService homeViewManagerService;
 
