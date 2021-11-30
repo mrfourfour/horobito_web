@@ -56,6 +56,7 @@ public class NovelManagerService {
         UpdateTimeDto updateTimeDto = updateTimeService.create(novelDto.getNovelId());
         List<CategoryDto> categoryDtos = categoryService.findAllByCategoryNames(categories);
         categoryNovelRelationService.create(novelDto.getNovelId(), categoryDtos);
+        preferenceService.createTotalCount(novelDto.getNovelId());
 
         return getNovelInfoDto(
                 novelDto.getNovelId(),
@@ -99,7 +100,7 @@ public class NovelManagerService {
                 novelDto.getAge(),
                 premium,
                 updateTimeDto.getUpdateTime(),
-                preferenceService.getTotalPreferenceCountByNovelId(novelId, episodeIds).getCount(),
+                preferenceService.getTotalPreferenceCountByNovelId(novelId).getCount(),
                 bookMarkService.getTotalBookMarkCount(novelId),
                 viewCountService.getTotalViewCount(novelId, episodeIds),
                 episodeService.getTotalEpisode(novelId),
@@ -130,7 +131,7 @@ public class NovelManagerService {
                 novelDto.getAge(),
                 gradeDto.isPremium(),
                 updateTimeDto.getUpdateTime(),
-                preferenceService.getTotalPreferenceCountByNovelId(novelId, episodeIds).getCount(),
+                preferenceService.getTotalPreferenceCountByNovelId(novelId).getCount(),
                 bookMarkService.getTotalBookMarkCount(novelId),
                 viewCountService.getTotalViewCount(novelId, episodeIds),
                 episodeService.getTotalEpisode(novelId),
@@ -143,6 +144,7 @@ public class NovelManagerService {
 
     @Transactional
     public NovelInfoDto delete(Long novelId) throws IllegalAccessException {
+        preferenceService.deleteTotalPreference(novelId);
         novelService.delete(novelId);
 
         List<CategoryDto> categoryDtos = categoryService.findAllByCategoryIds(categoryNovelRelationService.findCategoryIdsByNovelId(novelId));
@@ -163,7 +165,7 @@ public class NovelManagerService {
                 novelDto.getAge(),
                 gradeDto.isPremium(),
                 updateTimeDto.getUpdateTime(),
-                preferenceService.getTotalPreferenceCountByNovelId(novelId, episodeIds).getCount(),
+                preferenceService.getTotalPreferenceCountByNovelId(novelId).getCount(),
                 bookMarkService.getTotalBookMarkCount(novelId),
                 viewCountService.getTotalViewCount(novelId, episodeIds),
                 episodeService.getTotalEpisode(novelId),
@@ -176,6 +178,7 @@ public class NovelManagerService {
     @Transactional
     public NovelInfoDto resurrect(Long novelId) throws IllegalAccessException {
         novelService.resurrect(novelId);
+        preferenceService.resurrectTotalCount(novelId);
 
         List<CategoryDto> categoryDtos = categoryService.findAllByCategoryIds(categoryNovelRelationService.findCategoryIdsByNovelId(novelId));
         UpdateTimeDto updateTimeDto = updateTimeService.getUpdateTime(novelId);
@@ -195,7 +198,7 @@ public class NovelManagerService {
                 novelDto.getAge(),
                 gradeDto.isPremium(),
                 updateTimeDto.getUpdateTime(),
-                preferenceService.getTotalPreferenceCountByNovelId(novelId, episodeIds).getCount(),
+                preferenceService.getTotalPreferenceCountByNovelId(novelId).getCount(),
                 bookMarkService.getTotalBookMarkCount(novelId),
                 viewCountService.getTotalViewCount(novelId, episodeIds),
                 episodeService.getTotalEpisode(novelId),
@@ -221,7 +224,7 @@ public class NovelManagerService {
                 novelDto.getAge(),
                 gradeService.getGrade(novelId).isPremium(),
                 updateTimeDto.getUpdateTime(),
-                preferenceService.getTotalPreferenceCountByNovelId(novelId, episodeIds).getCount(),
+                preferenceService.getTotalPreferenceCountByNovelId(novelId).getCount(),
                 bookMarkService.getTotalBookMarkCount(novelId),
                 viewCountService.getTotalViewCount(novelId, episodeIds),
                 episodeService.getTotalEpisode(novelId),
