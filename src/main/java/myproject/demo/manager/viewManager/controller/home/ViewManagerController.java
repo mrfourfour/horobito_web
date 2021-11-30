@@ -28,4 +28,15 @@ public class ViewManagerController {
             return homeViewManagerService.getTopTwentyNonAdult();
         }
     }
+
+    @GetMapping("/{age}/{categoryName}")
+    public List<NovelInfoDto> getTopTwentyByCategory(@PathVariable String age, @PathVariable String categoryName){
+        if (age.equals("all")){
+            return homeViewManagerService.getTopTwentyAllByCategory(categoryName);
+        }else if(age.equals("adult")){
+            return homeViewManagerService.getTopTwentyAdultByCategory(categoryName);
+        }else {
+            return homeViewManagerService.getTopTwentyNonAdultByCategory(categoryName);
+        }
+    }
 }
