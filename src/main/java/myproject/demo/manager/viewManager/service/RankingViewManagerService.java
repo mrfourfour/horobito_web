@@ -2,22 +2,15 @@ package myproject.demo.manager.viewManager.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfo;
+import myproject.demo.Novel.service.NovelService;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
-import myproject.demo.category.service.CategoryService;
-import myproject.demo.category_novel.domain.CategoryNovelRelationId;
+import myproject.demo.User.service.UserService;
 import myproject.demo.category_novel.service.CategoryNovelRelationService;
 import myproject.demo.manager.novelManager.service.NovelInfoDto;
 import myproject.demo.manager.novelManager.service.NovelManagerService;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import javax.websocket.server.ServerEndpoint;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +22,8 @@ public class RankingViewManagerService {
     private final CategoryNovelRelationService relationService;
     private final PreferenceInfoRepository preferenceInfoRepository;
     private final NovelManagerService novelManagerService;
+    private final NovelService novelService;
+    private final UserService userService;
 
     public List<NovelInfoDto> getTopTwentyAllByCategory(
             String categoryName, String date, Long cursor, int size) {
@@ -45,12 +40,16 @@ public class RankingViewManagerService {
             preferenceInfoRepository.findAllByDeletedAndPreferenceTimeGreaterThanEqual(false, startDay)
                     .forEach(
                             selected -> {
-                                if (idAndPreference.containsKey(selected.getNovelId())) {
-                                    idAndPreference.get(selected.getNovelId()).increase();
-                                } else {
-                                    idAndPreference.put(
-                                            selected.getNovelId(), new PreferenceInfoBetweenPeriod(selected.getNovelId(), 0L));
+                                if (novelService.isPresentAndNonDeleted(selected.getNovelId())
+                                        && userService.isPresentAndNonDeleted(selected.getUserId())) {
+                                    if (idAndPreference.containsKey(selected.getNovelId())) {
+                                        idAndPreference.get(selected.getNovelId()).increase();
+                                    } else {
+                                        idAndPreference.put(
+                                                selected.getNovelId(), new PreferenceInfoBetweenPeriod(selected.getNovelId(), 1L));
+                                    }
                                 }
+
                             });
             List<PreferenceInfoBetweenPeriod> info = new ArrayList<>(idAndPreference.values());
             return getNovelInfoDtosByCursorAndSize(cursor, size, info);
@@ -64,16 +63,20 @@ public class RankingViewManagerService {
             List<PreferenceInfoBetweenPeriod> pib = new ArrayList<>();
             novelIds.forEach(
                     selectedId -> {
-                        if (!checkList.contains(selectedId)){
-                            checkList.add(selectedId);
-                            int preferenceSize = preferenceInfoRepository.findByNovelIdAndDeletedAndPreferenceTimeGreaterThanEqual(
-                                    selectedId,  false, startDay).size();
-                            if (preferenceSize!=0){
-                                pib.add(new PreferenceInfoBetweenPeriod(
-                                        selectedId,
-                                        (long) preferenceSize));}
+                        if (novelService.isPresentAndNonDeleted(selectedId)
+                                && userService.isPresentAndNonDeleted(novelService.getNovelDto(selectedId).getAuthorId())) {
+                            if (!checkList.contains(selectedId)) {
+                                checkList.add(selectedId);
+                                int preferenceSize = preferenceInfoRepository.findByNovelIdAndDeletedAndPreferenceTimeGreaterThanEqual(
+                                        selectedId, false, startDay).size();
+                                if (preferenceSize != 0) {
+                                    pib.add(new PreferenceInfoBetweenPeriod(
+                                            selectedId,
+                                            (long) preferenceSize));
+                                }
+                            }
                         }
-            });
+                    });
             return getNovelInfoDtosByCursorAndSize(cursor, size, pib);
         }
     }
