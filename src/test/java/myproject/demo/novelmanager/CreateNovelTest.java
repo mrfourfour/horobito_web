@@ -7,6 +7,7 @@ import myproject.demo.Novel.domain.NovelRepository;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountRepository;
+import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.Preference.service.PreferenceService;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
@@ -61,14 +62,23 @@ public class CreateNovelTest {
     UpdateTimeRepository updateTimeRepository;
     @Autowired
     ViewCountRepository viewCountRepository;
+    @Autowired
+    TotalPreferenceCountRepository totalPreferenceCountRepository;
     @Mock
     UserService userService;
 
 
 
+    @Test
+    public void testTemp(){
+        for (int i =16; i<=30; i++){
+            test1(i);
+        }
+    }
+
     @DisplayName("Create Test")
     @Test
-    public void test1(){
+    public void test1(int number){
         NovelService novelService = new NovelService(userService, novelRepository);
         CategoryService categoryService = new CategoryService(categoryRepository);
         CategoryNovelRelationService relationService = new CategoryNovelRelationService(
@@ -76,7 +86,7 @@ public class CreateNovelTest {
         GradeService gradeService = new GradeService(gradeRepository, novelService, userService);
         EpisodeService episodeService = new EpisodeService(novelService, userService, episodeRepository);
         PreferenceService preferenceService = new PreferenceService(
-                novelService, episodeService, userService, infoRepository, countRepository);
+                novelService, episodeService, userService, infoRepository, countRepository, totalPreferenceCountRepository);
         UpdateTimeService updateTimeService = new UpdateTimeService(
                 updateTimeRepository, novelService, userService);
         BookMarkService bookMarkService = new BookMarkService(userService,novelService,bookMarkRepository);
@@ -96,12 +106,12 @@ public class CreateNovelTest {
         );
         UserDto userDto = new UserDto(1L, "user1");
 
-        String title = "Title for NovelManagerTest";
-        String description = "Description for NovelManagerTest";
-        List<String> categories = Arrays.asList("fantasy", "horror", "school");
+        String title = "Title" + number;
+        String description = "Description" + number;
+        List<String> categories = Arrays.asList("romance");
         int age = 12;
         boolean premium = false;
-        String coverImageUrl = "Url for NovelManagerTest";
+        String coverImageUrl = "Url" + number;
 
         when(userService.findLoggedUser()).thenReturn(userDto);
         when(userService.findUserByUserId(any())).thenReturn(userDto);

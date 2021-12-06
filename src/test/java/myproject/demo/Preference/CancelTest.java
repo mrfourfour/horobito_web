@@ -6,6 +6,7 @@ import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfo;
 import myproject.demo.Preference.domain.PreferencInfo.PreferenceInfoRepository;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCount;
 import myproject.demo.Preference.domain.PreferenceCount.PreferenceCountRepository;
+import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.Preference.service.PreferenceService;
 import myproject.demo.User.service.UserDto;
 import myproject.demo.User.service.UserService;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -40,6 +42,9 @@ public class CancelTest {
     @Mock
     PreferenceCountRepository countRepository;
 
+    @Mock
+    TotalPreferenceCountRepository totalPreferenceCountRepository;
+
     @DisplayName("Cancel test 1. Normal Condition")
     @Test
     public void test1() {
@@ -49,7 +54,8 @@ public class CancelTest {
                 episodeService,
                 userService,
                 infoRepository,
-                countRepository
+                countRepository,
+                totalPreferenceCountRepository
         );
         UserDto userDto = new UserDto(1L, "user1");
         Long novelId = 1L;
@@ -87,7 +93,8 @@ public class CancelTest {
                 episodeService,
                 userService,
                 infoRepository,
-                countRepository
+                countRepository,
+                totalPreferenceCountRepository
         );
         UserDto userDto = new UserDto(1L, "user1");
         Long novelId = 1L;
