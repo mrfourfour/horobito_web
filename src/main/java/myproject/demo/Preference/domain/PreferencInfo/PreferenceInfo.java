@@ -1,5 +1,6 @@
 package myproject.demo.Preference.domain.PreferencInfo;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @IdClass(PreferenceInfoId.class)
 @NoArgsConstructor
+@Getter
 public class PreferenceInfo {
 
     @Id
