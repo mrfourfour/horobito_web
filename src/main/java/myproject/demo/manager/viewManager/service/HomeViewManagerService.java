@@ -50,14 +50,14 @@ public class HomeViewManagerService {
 
 
     public List<NovelInfoDto> getTopTwentyAllByCategory(String categoryName) {
-        List<Long> novelIds = getNovelIdsCorrespondingThisCategory(categoryName);
+        List<Long> novelIds = categoryNovelRelationService.getNovelIdsCorrespondingThisCategory(categoryName);
         return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, novelIds)
                 .stream().map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
     }
 
 
     public List<NovelInfoDto> getTopTwentyAdultByCategory(String categoryName) {
-        List<Long> novelIds = getNovelIdsCorrespondingThisCategory(categoryName);
+        List<Long> novelIds = categoryNovelRelationService.getNovelIdsCorrespondingThisCategory(categoryName);
         List<Long> adultNovelIds = novelRepository.findAllByDeletedAndIdInAndAgeGreaterThanEqual(false, novelIds, Age.create(18))
                 .stream().map(Novel::getId).collect(Collectors.toList());
         return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, adultNovelIds)
@@ -66,7 +66,7 @@ public class HomeViewManagerService {
 
 
     public List<NovelInfoDto> getTopTwentyNonAdultByCategory(String categoryName) {
-        List<Long> novelIds = getNovelIdsCorrespondingThisCategory(categoryName);
+        List<Long> novelIds = categoryNovelRelationService.getNovelIdsCorrespondingThisCategory(categoryName);
         List<Long> nonAdultNovelIds = novelRepository.findAllByDeletedAndIdInAndAgeLessThan(false, novelIds, Age.create(18))
                 .stream().map(Novel::getId).collect(Collectors.toList());
         return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, nonAdultNovelIds)
@@ -77,8 +77,5 @@ public class HomeViewManagerService {
 
 
 
-    private List<Long> getNovelIdsCorrespondingThisCategory(String categoryName) {
-        Long categoryId = categoryService.getCategoryIdByName(categoryName);
-        return categoryNovelRelationService.findAllByCategoryId(categoryId);
-    }
+
 }
