@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 @Service
 @RequiredArgsConstructor
@@ -265,6 +266,30 @@ public class NovelManagerService {
                 episodeNumber,
                 categoryDtos
 
+        );
+    }
+
+    public NovelInfoDto viewNovelWithPreference(Long novelId, Long preferenceCount) {
+        NovelDto novelDto = novelService.getNovelDto(novelId);
+        List<Integer> episodeIds = episodeService.findAllByNovelId(novelId)
+                .stream().map(EpisodeDto::getEpisodeId).collect(Collectors.toList());
+        UpdateTimeDto updateTimeDto = updateTimeService.getUpdateTime(novelId);
+        List<CategoryDto> categoryDtos = categoryService.findAllByCategoryIds(categoryNovelRelationService.findCategoryIdsByNovelId(novelId));
+        return getNovelInfoDto(
+                novelDto.getNovelId(),
+                novelDto.getTitle(),
+                novelDto.getAuthorName(),
+                novelDto.getCoverImageUrl(),
+                novelDto.getDescription(),
+                novelDto.isDeleted(),
+                novelDto.getAge(),
+                gradeService.getGrade(novelId).isPremium(),
+                updateTimeDto.getUpdateTime(),
+                preferenceCount,
+                bookMarkService.getTotalBookMarkCount(novelId),
+                viewCountService.getTotalViewCount(novelId, episodeIds),
+                episodeService.getTotalEpisode(novelId),
+                categoryDtos
         );
     }
 }
