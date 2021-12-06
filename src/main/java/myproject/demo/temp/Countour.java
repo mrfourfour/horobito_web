@@ -1,5 +1,5 @@
 package myproject.demo.temp;
 
 public class Countour {
-//SideTask in CategoryNovelRelation
+//SideTask in Novel
 }
