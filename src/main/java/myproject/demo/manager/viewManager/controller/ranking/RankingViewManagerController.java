@@ -4,7 +4,6 @@ package myproject.demo.manager.viewManager.controller.ranking;
 import lombok.RequiredArgsConstructor;
 import myproject.demo.manager.novelManager.service.NovelInfoDto;
 import myproject.demo.manager.viewManager.service.RankingViewManagerService;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +23,12 @@ public class RankingViewManagerController {
             @RequestParam(value = "cursor") Long cursor,
             @RequestParam(value = "size") int size
     ){
-//        if (age.equals("all")){
-            return rankingViewManagerService.getTopTwentyAllByCategory(categoryName, date, cursor, size);
-//        }else if(age.equals("adult")){
-//            return rankingViewManagerService.getTopTwentyAdultByCategory(categoryName, date, cursor, PageRequest.of(0, size));
-//        }else {
-//            return rankingViewManagerService.getTopTwentyNonAdultByCategory(categoryName, date, cursor, PageRequest.of(0, size));
-//        }
+        if (age.equals("all")){
+            return rankingViewManagerService.getTopAllByCategory(categoryName, date, cursor, size);
+        }else if(age.equals("adult")){
+            return rankingViewManagerService.getTopAdultByCategory(categoryName, date, cursor, size);
+        }else {
+            return rankingViewManagerService.getTopNonAdultByCategory(categoryName, date, cursor, size);
+        }
     }
 }
