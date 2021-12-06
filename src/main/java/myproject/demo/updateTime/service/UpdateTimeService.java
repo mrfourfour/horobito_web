@@ -1,7 +1,6 @@
 package myproject.demo.updateTime.service;
 
 import lombok.RequiredArgsConstructor;
-import myproject.demo.Episode.domain.EpisodeId;
 import myproject.demo.Novel.service.NovelService;
 import myproject.demo.User.service.UserService;
 import myproject.demo.updateTime.domain.UpdateTime;
@@ -68,7 +67,6 @@ public class UpdateTimeService {
 
     public UpdateTimeDto getUpdateTime(Long novelId){
         UpdateTime updateTime = updateTimeRepository.findById(novelId).get();
-        updateTime.update();
         return getDto(updateTime);
     }
 

@@ -143,4 +143,8 @@ public class NovelService {
         checkJustExistenceById(novelId);
         return createNovelDto(novelRepository.findById(novelId).get());
     }
+
+    public boolean isPresentAndNonDeleted(Long novelId) {
+        return novelRepository.existsById(novelId) && !novelRepository.findById(novelId).get().isDeleted();
+    }
 }

@@ -1,5 +1,5 @@
 package myproject.demo.temp;
 
 public class Countour {
-//others2
+//SideTask in properties
 }

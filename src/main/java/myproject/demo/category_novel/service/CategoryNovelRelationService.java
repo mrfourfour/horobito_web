@@ -13,6 +13,7 @@ import myproject.demo.category_novel.domain.CategoryNovelRelationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -73,6 +74,11 @@ public class CategoryNovelRelationService {
         });
     }
 
+    public List<Long> getNovelIdsCorrespondingThisCategory(String categoryName) {
+        Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        return findAllByCategoryId(categoryId);
+    }
+
 
     private void resurrect(CategoryNovelRelation categoryNovelRelation) {
         categoryNovelRelation.resurrect();
@@ -99,7 +105,6 @@ public class CategoryNovelRelationService {
         }
     }
 
-
     private void checkExistence(Optional<CategoryNovelRelation> relation) {
         if (relation.isEmpty()) {
             throw new IllegalArgumentException();
@@ -114,6 +119,16 @@ public class CategoryNovelRelationService {
 
     public List<Long> findAllByCategoryId(Long categoryId) {
         return relationRepository.findAllByCategoryIdAndDeleted(categoryId, false).stream()
+                .map(CategoryNovelRelation::getNovelId).collect(Collectors.toList());
+    }
+
+    public List<Long> getNovelIdsCorrespondingThisCategoryOnlyAdult(String categoryName, List<Long> adultNovelIds) {
+        Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        return findAllByCategoryIdAndNovelIds(categoryId, adultNovelIds);
+    }
+
+    private List<Long> findAllByCategoryIdAndNovelIds(Long categoryId, List<Long> adultNovelIds) {
+        return relationRepository.findAllByCategoryIdAndNovelIdInAndDeleted(categoryId, adultNovelIds,false).stream()
                 .map(CategoryNovelRelation::getNovelId).collect(Collectors.toList());
     }
 }

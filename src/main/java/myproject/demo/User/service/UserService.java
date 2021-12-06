@@ -94,4 +94,8 @@ public class UserService {
     public UserDto getUserDto(User user){
         return new UserDto(user.getUserId(), user.getUsername());
     }
+
+    public boolean isPresentAndNonDeleted(Long userId) {
+        return userRepository.existsById(userId) && !userRepository.findById(userId).get().checkDeleted();
+    }
 }
