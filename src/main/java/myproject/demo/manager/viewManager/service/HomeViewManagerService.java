@@ -1,14 +1,11 @@
 package myproject.demo.manager.viewManager.service;
 
 import lombok.RequiredArgsConstructor;
-import myproject.demo.Novel.domain.Age;
-import myproject.demo.Novel.domain.Novel;
-import myproject.demo.Novel.domain.NovelRepository;
-import myproject.demo.Preference.domain.TotalPreferenceCount.TotalPreferenceCountRepository;
 import myproject.demo.category.service.CategoryService;
-import myproject.demo.category_novel.service.CategoryNovelRelationService;
 import myproject.demo.manager.novelManager.service.NovelInfoDto;
 import myproject.demo.manager.novelManager.service.NovelManagerService;
+import myproject.demo.novelViewModel.service.NovelViewModelDto;
+import myproject.demo.novelViewModel.service.NovelViewModelService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,58 +16,47 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HomeViewManagerService {
 
-    private final CategoryService categoryService;
-    private final CategoryNovelRelationService categoryNovelRelationService;
     private final NovelManagerService novelManagerService;
-    private final NovelRepository novelRepository;
-    private final TotalPreferenceCountRepository totalCountRepository;
+    private final NovelViewModelService novelViewModelService;
+    private final CategoryService categoryService;
+
+
 
 
     public List<NovelInfoDto> getTopTwentyAll() {
-        return totalCountRepository.findTop20ByDeletedOrderByTotalCountDesc(false).stream()
-                .map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
+        return getResult(novelViewModelService.getTopTwentyAll());
     }
 
-
     public List<NovelInfoDto> getTopTwentyAdult() {
-        List<Long> adultNovelIds = novelRepository.findAllByDeletedAndAgeGreaterThanEqual(false, Age.create(18))
-                .stream().map(Novel::getId).collect(Collectors.toList());
-        return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, adultNovelIds)
-                .stream().map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
+        return getResult(novelViewModelService.getTopTwentyAdult());
     }
 
 
     public List<NovelInfoDto> getTopTwentyNonAdult() {
-        List<Long> nonAdultNovelIds = novelRepository.findAllByDeletedAndAgeLessThan(false, Age.create(18))
-                .stream().map(Novel::getId).collect(Collectors.toList());
-        return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, nonAdultNovelIds)
-                .stream().map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
+        return getResult(novelViewModelService.getTopTwentyNonAdult());
     }
 
-
-
     public List<NovelInfoDto> getTopTwentyAllByCategory(String categoryName) {
-        List<Long> novelIds = categoryNovelRelationService.getNovelIdsCorrespondingThisCategory(categoryName);
-        return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, novelIds)
-                .stream().map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
+        Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        return getResult(novelViewModelService.getTopTwentyAllByCategory(categoryId));
     }
 
 
     public List<NovelInfoDto> getTopTwentyAdultByCategory(String categoryName) {
-        List<Long> novelIds = categoryNovelRelationService.getNovelIdsCorrespondingThisCategory(categoryName);
-        List<Long> adultNovelIds = novelRepository.findAllByDeletedAndIdInAndAgeGreaterThanEqual(false, novelIds, Age.create(18))
-                .stream().map(Novel::getId).collect(Collectors.toList());
-        return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, adultNovelIds)
-                .stream().map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
+        Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        return getResult(novelViewModelService.getTopTwentyAdultByCategory(categoryId));
     }
 
 
     public List<NovelInfoDto> getTopTwentyNonAdultByCategory(String categoryName) {
-        List<Long> novelIds = categoryNovelRelationService.getNovelIdsCorrespondingThisCategory(categoryName);
-        List<Long> nonAdultNovelIds = novelRepository.findAllByDeletedAndIdInAndAgeLessThan(false, novelIds, Age.create(18))
-                .stream().map(Novel::getId).collect(Collectors.toList());
-        return totalCountRepository.findTop20ByDeletedAndNovelIdInOrderByTotalCountDesc(false, nonAdultNovelIds)
-                .stream().map(selected->novelManagerService.viewNovel(selected.getNovelId())).collect(Collectors.toList());
+        Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        return getResult(novelViewModelService.getTopTwentyNonAdultByCategory(categoryId));
+    }
+
+    public List<NovelInfoDto> getResult(List<NovelViewModelDto> novelViewModelDto){
+        return novelViewModelDto.stream().map(
+                it->novelManagerService.viewNovel(it, it.getNovelId())
+        ).collect(Collectors.toList());
     }
 
 
