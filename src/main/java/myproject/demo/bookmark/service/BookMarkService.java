@@ -48,11 +48,6 @@ public class BookMarkService {
     }
 
 
-    public int getTotalBookMarkCount(Long novel){
-        return bookMarkRepository.findAllByNovelIdAndDeleted(novel, false).stream().filter(it->!it.isDeleted())
-                .toArray().length;
-    }
-
     private void checkExist(Long userId, Long novelId) {
         if(bookMarkRepository.findById(BookMarkId.create(userId, novelId)).isEmpty()){
             throw new IllegalArgumentException();
