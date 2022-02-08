@@ -1,4 +1,4 @@
-package myproject.demo.novelmanager;
+package myproject.demo.manager.novelmanager;
 
 import myproject.demo.Episode.domain.EpisodeRepository;
 import myproject.demo.Episode.service.EpisodeService;
@@ -19,10 +19,11 @@ import myproject.demo.category_novel.service.CategoryNovelRelationService;
 import myproject.demo.grade.domain.GradeRepository;
 import myproject.demo.grade.service.GradeService;
 import myproject.demo.manager.novelManager.service.NovelManagerService;
+import myproject.demo.novelViewModel.domain.NovelViewModelRepository;
+import myproject.demo.novelViewModel.service.NovelViewModelService;
 import myproject.demo.updateTime.domain.UpdateTimeRepository;
 import myproject.demo.updateTime.service.UpdateTimeService;
 import myproject.demo.view.domain.ViewCountRepository;
-import myproject.demo.view.service.ViewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -36,7 +37,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class ViewNovelTest {
+public class UpdateNovelTest {
+
+
+
     @Autowired
     BookMarkRepository bookMarkRepository;
 
@@ -60,12 +64,14 @@ public class ViewNovelTest {
     ViewCountRepository viewCountRepository;
     @Autowired
     TotalPreferenceCountRepository totalPreferenceCountRepository;
+    @Autowired
+    NovelViewModelRepository novelViewModelRepository;
     @Mock
     UserService userService;
 
-    @DisplayName("View Test")
+    @DisplayName("Update Test")
     @Test
-    public void test1() throws IllegalAccessException {
+    public void test2() throws IllegalAccessException {
         NovelService novelService = new NovelService(userService, novelRepository);
         CategoryService categoryService = new CategoryService(categoryRepository);
         CategoryNovelRelationService relationService = new CategoryNovelRelationService(
@@ -76,8 +82,12 @@ public class ViewNovelTest {
                 novelService, episodeService, userService, infoRepository, countRepository, totalPreferenceCountRepository);
         UpdateTimeService updateTimeService = new UpdateTimeService(
                 updateTimeRepository, novelService, userService);
-        BookMarkService bookMarkService = new BookMarkService(userService,novelService,bookMarkRepository);
-        ViewService viewService = new ViewService(viewCountRepository, novelService,episodeService );
+        NovelViewModelService novelViewModelService = new NovelViewModelService(
+                novelViewModelRepository
+        );
+        BookMarkService bookMarkService = new BookMarkService(
+                userService, novelService, bookMarkRepository
+        );
 
 
         NovelManagerService sut = new NovelManagerService(
@@ -85,11 +95,10 @@ public class ViewNovelTest {
                 categoryService,
                 relationService,
                 gradeService,
-                episodeService,
                 preferenceService,
                 updateTimeService,
-                bookMarkService,
-                viewService
+                novelViewModelService,
+                bookMarkService
         );
         UserDto userDto = new UserDto(1L, "user1");
 
@@ -102,8 +111,9 @@ public class ViewNovelTest {
 
         when(userService.findLoggedUser()).thenReturn(userDto);
         when(userService.findUserByUserId(any())).thenReturn(userDto);
-
         System.out.println(
-                sut.viewNovel(14L));
+                sut.updateNovelInfo(14L,
+                        title,description,categories,age,premium,coverImageUrl
+                ));
     }
 }

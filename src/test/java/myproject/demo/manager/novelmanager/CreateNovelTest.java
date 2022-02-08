@@ -1,4 +1,4 @@
-package myproject.demo.novelmanager;
+package myproject.demo.manager.novelmanager;
 
 
 import myproject.demo.Episode.domain.EpisodeRepository;
@@ -20,10 +20,11 @@ import myproject.demo.category_novel.service.CategoryNovelRelationService;
 import myproject.demo.grade.domain.GradeRepository;
 import myproject.demo.grade.service.GradeService;
 import myproject.demo.manager.novelManager.service.NovelManagerService;
+import myproject.demo.novelViewModel.domain.NovelViewModelRepository;
+import myproject.demo.novelViewModel.service.NovelViewModelService;
 import myproject.demo.updateTime.domain.UpdateTimeRepository;
 import myproject.demo.updateTime.service.UpdateTimeService;
 import myproject.demo.view.domain.ViewCountRepository;
-import myproject.demo.view.service.ViewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -43,7 +44,6 @@ public class CreateNovelTest {
 
     @Autowired
     BookMarkRepository bookMarkRepository;
-
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
@@ -64,6 +64,8 @@ public class CreateNovelTest {
     ViewCountRepository viewCountRepository;
     @Autowired
     TotalPreferenceCountRepository totalPreferenceCountRepository;
+    @Autowired
+    NovelViewModelRepository novelViewModelRepository;
     @Mock
     UserService userService;
 
@@ -71,7 +73,7 @@ public class CreateNovelTest {
 
     @Test
     public void testTemp(){
-        for (int i =16; i<=30; i++){
+        for (int i =301; i<=400; i++){
             test1(i);
         }
     }
@@ -89,8 +91,12 @@ public class CreateNovelTest {
                 novelService, episodeService, userService, infoRepository, countRepository, totalPreferenceCountRepository);
         UpdateTimeService updateTimeService = new UpdateTimeService(
                 updateTimeRepository, novelService, userService);
-        BookMarkService bookMarkService = new BookMarkService(userService,novelService,bookMarkRepository);
-        ViewService viewService = new ViewService(viewCountRepository, novelService,episodeService );
+        NovelViewModelService novelViewModelService = new NovelViewModelService(
+                novelViewModelRepository
+        );
+        BookMarkService bookMarkService = new BookMarkService(
+                userService, novelService, bookMarkRepository
+        );
 
 
         NovelManagerService sut = new NovelManagerService(
@@ -98,19 +104,18 @@ public class CreateNovelTest {
                 categoryService,
                 relationService,
                 gradeService,
-                episodeService,
                 preferenceService,
                 updateTimeService,
-                bookMarkService,
-                viewService
+                novelViewModelService,
+                bookMarkService
         );
-        UserDto userDto = new UserDto(1L, "user1");
+        UserDto userDto = new UserDto(1L, "chungil");
 
         String title = "Title" + number;
         String description = "Description" + number;
-        List<String> categories = Arrays.asList("romance");
-        int age = 12;
-        boolean premium = false;
+        List<String> categories = Arrays.asList("horror");
+        int age = 18;
+        boolean premium = true;
         String coverImageUrl = "Url" + number;
 
         when(userService.findLoggedUser()).thenReturn(userDto);
