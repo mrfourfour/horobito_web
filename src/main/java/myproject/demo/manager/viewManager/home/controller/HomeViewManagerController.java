@@ -1,9 +1,9 @@
-package myproject.demo.manager.viewManager.controller.home;
+package myproject.demo.manager.viewManager.home.controller;
 
 
 import lombok.RequiredArgsConstructor;
 import myproject.demo.manager.novelManager.service.NovelInfoDto;
-import myproject.demo.manager.viewManager.service.HomeViewManagerService;
+import myproject.demo.manager.viewManager.home.service.HomeViewManagerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

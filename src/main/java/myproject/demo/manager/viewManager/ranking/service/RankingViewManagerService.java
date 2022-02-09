@@ -1,4 +1,4 @@
-package myproject.demo.manager.viewManager.service;
+package myproject.demo.manager.viewManager.ranking.service;
 
 import lombok.RequiredArgsConstructor;
 import myproject.demo.category.service.CategoryService;

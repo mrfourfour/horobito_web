@@ -1,4 +1,4 @@
-package myproject.demo.manager.viewmanager;
+package myproject.demo.manager.viewmanager.home;
 
 
 import myproject.demo.Episode.domain.EpisodeRepository;
@@ -21,7 +21,7 @@ import myproject.demo.grade.domain.GradeRepository;
 import myproject.demo.grade.service.GradeService;
 import myproject.demo.manager.novelManager.service.NovelInfoDto;
 import myproject.demo.manager.novelManager.service.NovelManagerService;
-import myproject.demo.manager.viewManager.service.HomeViewManagerService;
+import myproject.demo.manager.viewManager.home.service.HomeViewManagerService;
 import myproject.demo.novelViewModel.domain.NovelViewModelRepository;
 import myproject.demo.novelViewModel.service.NovelViewModelService;
 import myproject.demo.updateTime.domain.UpdateTimeRepository;
