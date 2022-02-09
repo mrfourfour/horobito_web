@@ -39,8 +39,21 @@ public class AllNovelViewManagerService {
     }
 
 
-    public void getAllNovelListByCategory(String categoryName, String sort, Long cursor, int size) {
+    public List<NovelInfoDto> getAllNovelListByCategory(String categoryName, String sort, Long cursor, int size) {
         Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        if (sort.equals("view")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllInViewOrderWithCategory(categoryId, cursor, size));
+        }else if(sort.equals("preference")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllInPreferenceOrderWithCategory(categoryId, cursor, size));
+        }else if(sort.equals("date")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllInDateOrderWithCategory(categoryId, cursor, size));
+        }else if (sort.equals("episode")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllInEpisodeCountOrderWithCategory(categoryId, cursor, size));
+        }else if (sort.equals("book-mark")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllInBookMarkCountOrderWithCategory(categoryId, cursor, size));
+        }else {
+            throw new IllegalArgumentException();
+        }
     }
 
 
