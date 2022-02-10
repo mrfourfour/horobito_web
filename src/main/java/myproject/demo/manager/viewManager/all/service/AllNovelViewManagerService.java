@@ -40,7 +40,7 @@ public class AllNovelViewManagerService {
 
 
     public List<NovelInfoDto> getAllNovelListByCategory(String categoryName, String sort, Long cursor, int size) {
-        Long categoryId = categoryService.getCategoryIdByName(categoryName);
+        Long categoryId = getCategoryIdByName(categoryName);
         if (sort.equals("view")){
             return getNovelInfoList(allNovelViewModelRepository.findAllInViewOrderWithCategory(categoryId, cursor, size));
         }else if(sort.equals("preference")){
@@ -56,9 +56,81 @@ public class AllNovelViewManagerService {
         }
     }
 
+    public List<NovelInfoDto> getAdultNovelList(String sort, Long cursor, int size) {
+        if (sort.equals("view")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInViewOrder(cursor, size));
+        }else if(sort.equals("preference")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInPreferenceOrder(cursor, size));
+        }else if(sort.equals("date")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInDateOrder(cursor, size));
+        }else if (sort.equals("episode")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInEpisodeCountOrder(cursor, size));
+        }else if (sort.equals("book-mark")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInBookMarkCountOrder(cursor, size));
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public List<NovelInfoDto> getAdultNovelListByCategory(String categoryName, String sort, Long cursor, int size) {
+        Long categoryId = getCategoryIdByName(categoryName);
+        if (sort.equals("view")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInViewOrderWithCategory(categoryId, cursor, size));
+        }else if(sort.equals("preference")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInPreferenceOrderWithCategory(categoryId, cursor, size));
+        }else if(sort.equals("date")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInDateOrderWithCategory(categoryId, cursor, size));
+        }else if (sort.equals("episode")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInEpisodeCountOrderWithCategory(categoryId, cursor, size));
+        }else if (sort.equals("book-mark")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInBookMarkCountOrderWithCategory(categoryId, cursor, size));
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public List<NovelInfoDto> getNonAdultNovelList(String sort, Long cursor, int size) {
+        if (sort.equals("view")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInViewOrder(cursor, size));
+        }else if(sort.equals("preference")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInPreferenceOrder(cursor, size));
+        }else if(sort.equals("date")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInDateOrder(cursor, size));
+        }else if (sort.equals("episode")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInEpisodeCountOrder(cursor, size));
+        }else if (sort.equals("book-mark")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInBookMarkCountOrder(cursor, size));
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public List<NovelInfoDto> getNonAdultNovelListByCategory(String categoryName, String sort, Long cursor, int size) {
+        Long categoryId = getCategoryIdByName(categoryName);
+        if (sort.equals("view")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInViewOrderWithCategory(categoryId, cursor, size));
+        }else if(sort.equals("preference")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInPreferenceOrderWithCategory(categoryId, cursor, size));
+        }else if(sort.equals("date")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInDateOrderWithCategory(categoryId, cursor, size));
+        }else if (sort.equals("episode")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInEpisodeCountOrderWithCategory(categoryId, cursor, size));
+        }else if (sort.equals("book-mark")){
+            return getNovelInfoList(allNovelViewModelRepository.findAllAdultNovelInBookMarkCountOrderWithCategory(categoryId, cursor, size));
+        }else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private Long getCategoryIdByName(String categoryName) {
+        return categoryService.getCategoryIdByName(categoryName);
+    }
+
 
     public List<NovelInfoDto> getNovelInfoList(List<NovelViewModel> novelViewModelList){
         return novelViewModelService.getDtoList(novelViewModelList)
                 .stream().map(it->novelManagerService.viewNovel(it, it.getNovelId())).collect(Collectors.toList());
     }
+
+
 }
