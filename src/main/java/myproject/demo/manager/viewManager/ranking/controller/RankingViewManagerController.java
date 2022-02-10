@@ -4,6 +4,8 @@ package myproject.demo.manager.viewManager.ranking.controller;
 import lombok.RequiredArgsConstructor;
 import myproject.demo.manager.novelManager.service.NovelInfoDto;
 import myproject.demo.manager.viewManager.home.service.HomeViewManagerService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public class RankingViewManagerController {
     private final HomeViewManagerService homeViewManagerService;
 
     @GetMapping("/all/{categoryName}")
-    public List<NovelInfoDto> getAllRanking(
+    public ResponseEntity<List<NovelInfoDto>> getAllRanking(
             @PathVariable String age,
             @PathVariable String categoryName,
             @RequestParam(value = "from") String date,
@@ -24,14 +26,14 @@ public class RankingViewManagerController {
             @RequestParam(value = "size") int size
     ) {
         if (categoryName.equals("all")) {
-            return homeViewManagerService.getTopTwentyAll();
+            return ResponseEntity.ok(homeViewManagerService.getTopTwentyAll());
         } else {
-            return homeViewManagerService.getTopTwentyAllByCategory(categoryName);
+            return ResponseEntity.ok(homeViewManagerService.getTopTwentyAllByCategory(categoryName));
         }
     }
 
     @GetMapping("/adult/{categoryName}")
-    public List<NovelInfoDto> getAdultRanking(
+    public ResponseEntity<List<NovelInfoDto>> getAdultRanking(
             @PathVariable String age,
             @PathVariable String categoryName,
             @RequestParam(value = "from") String date,
@@ -39,14 +41,14 @@ public class RankingViewManagerController {
             @RequestParam(value = "size") int size
     ) {
         if (categoryName.equals("all")) {
-            return homeViewManagerService.getTopTwentyAdult();
+            return ResponseEntity.ok(homeViewManagerService.getTopTwentyAdult());
         } else {
-            return homeViewManagerService.getTopTwentyAdultByCategory(categoryName);
+            return ResponseEntity.ok(homeViewManagerService.getTopTwentyAdultByCategory(categoryName));
         }
     }
 
     @GetMapping("/non-adult/{categoryName}")
-    public List<NovelInfoDto> getNonAdultRanking(
+    public ResponseEntity<List<NovelInfoDto>> getNonAdultRanking(
             @PathVariable String age,
             @PathVariable String categoryName,
             @RequestParam(value = "from") String date,
@@ -54,9 +56,15 @@ public class RankingViewManagerController {
             @RequestParam(value = "size") int size
     ) {
         if (categoryName.equals("all")) {
-            return homeViewManagerService.getTopTwentyNonAdult();
+            return ResponseEntity.ok(homeViewManagerService.getTopTwentyNonAdult());
         } else {
-            return homeViewManagerService.getTopTwentyNonAdultByCategory(categoryName);
+            return ResponseEntity.ok(homeViewManagerService.getTopTwentyNonAdultByCategory(categoryName));
         }
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(){
+        return ResponseEntity.badRequest().build();
+    }
+
 }
