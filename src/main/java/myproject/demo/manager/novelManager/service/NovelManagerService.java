@@ -175,55 +175,6 @@ public class NovelManagerService {
         );
     }
 
-    @Transactional
-    public NovelInfoDto setBookmark(Long novelId) {
-        bookMarkService.create(novelId);
-        novelViewModelService.increaseBookmarkCount(novelId);
-        NovelViewModelDto novelViewModelDto = novelViewModelService.getViewModel(novelId);
-        List<CategoryDto> categoryDtos = getCategoryDtoList(novelId);
-
-        return getNovelInfoDto(
-                novelViewModelDto.getNovelId(),
-                novelViewModelDto.getTitle(),
-                novelViewModelDto.getAuthorName(),
-                novelViewModelDto.getCoverImageUrl(),
-                novelViewModelDto.getDescription(),
-                novelViewModelDto.isDeleted(),
-                novelViewModelDto.getAge(),
-                novelViewModelDto.isPremium(),
-                novelViewModelDto.getUpdateTime(),
-                novelViewModelDto.getPreferenceCount(),
-                novelViewModelDto.getBookMarkCount(),
-                novelViewModelDto.getView(),
-                novelViewModelDto.getEpisodeNumber(),
-                categoryDtos
-        );
-    }
-
-    @Transactional
-    public NovelInfoDto cancelBookmark(Long novelId){
-        bookMarkService.delete(novelId);
-        novelViewModelService.decreaseBookmarkCount(novelId);
-        List<CategoryDto> categoryDtos = getCategoryDtoList(novelId);
-        NovelViewModelDto novelViewModelDto = novelViewModelService.getViewModel(novelId);
-
-        return getNovelInfoDto(
-                novelViewModelDto.getNovelId(),
-                novelViewModelDto.getTitle(),
-                novelViewModelDto.getAuthorName(),
-                novelViewModelDto.getCoverImageUrl(),
-                novelViewModelDto.getDescription(),
-                novelViewModelDto.isDeleted(),
-                novelViewModelDto.getAge(),
-                novelViewModelDto.isPremium(),
-                novelViewModelDto.getUpdateTime(),
-                novelViewModelDto.getPreferenceCount(),
-                novelViewModelDto.getBookMarkCount(),
-                novelViewModelDto.getView(),
-                novelViewModelDto.getEpisodeNumber(),
-                categoryDtos
-        );
-    }
 
     public NovelInfoDto viewNovel(Long novelId) {
         List<CategoryDto> categoryDtos = getCategoryDtoList(novelId);
