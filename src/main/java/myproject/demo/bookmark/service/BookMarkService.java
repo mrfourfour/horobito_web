@@ -18,7 +18,6 @@ public class BookMarkService {
     private final NovelService novelService;
     private final BookMarkRepository bookMarkRepository;
 
-    @Transactional
     public void create(Long novelId){
         Long userId = userService.findLoggedUser().getUserId();
         novelService.checkExistenceById(novelId);
@@ -26,25 +25,26 @@ public class BookMarkService {
         makeOrResurrect(novelId, userId);
     }
 
-    @Transactional
     public void makeOrResurrect(Long novelId, Long userId) {
 
         if (bookMarkRepository.existsById(BookMarkId.create(userId, novelId))){
-            bookMarkRepository.findById(BookMarkId.create(userId, novelId))
-                    .ifPresent(BookMark::resurrect);
+            BookMark bookMark = bookMarkRepository.findById(BookMarkId.create(userId, novelId)).get();
+            bookMark.resurrect();
+            bookMarkRepository.save(bookMark);
         }else {
             bookMarkRepository.saveAndFlush(BookMark.create(userId, novelId));
         }
     }
 
-    @Transactional
+
     public void delete(Long novelId){
         Long userId = userService.findLoggedUser().getUserId();
         novelService.checkExistenceById(novelId);
         checkExist(userId,novelId);
 
-        bookMarkRepository.findById(BookMarkId.create(userId, novelId))
-                .ifPresent(BookMark::delete);
+        BookMark bookMark = bookMarkRepository.findById(BookMarkId.create(userId, novelId)).get();
+        bookMark.delete();
+        bookMarkRepository.save(bookMark);
     }
 
 
