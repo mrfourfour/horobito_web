@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("novels/premium")
+@RequestMapping("novels/free")
 @RequiredArgsConstructor
 public class FreeNovelViewManagerController {
 

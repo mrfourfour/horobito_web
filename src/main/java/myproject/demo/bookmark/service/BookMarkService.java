@@ -60,4 +60,8 @@ public class BookMarkService {
             throw new IllegalArgumentException();
         }
     }
+
+    public boolean checkUserAlreadyBookmark(Long userId, Long novelId) {
+        return bookMarkRepository.findById(BookMarkId.create(userId, novelId)).isPresent();
+    }
 }

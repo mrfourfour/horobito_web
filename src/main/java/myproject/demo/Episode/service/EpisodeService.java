@@ -176,7 +176,7 @@ public class EpisodeService {
 
     public List<EpisodeDto> findAllByNovelId(Long novelId) {
         return episodeRepository.findAllByNovelIdAndDeleted(novelId, false)
-                .stream().filter(it-> !it.isDeleted()).map(this::getEpisodeDto).collect(Collectors.toList());
+                .stream().map(this::getEpisodeDto).collect(Collectors.toList());
     }
 
     public EpisodeDto getEpisode(Long novelId, int episodeNum) {

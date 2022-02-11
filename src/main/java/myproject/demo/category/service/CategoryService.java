@@ -125,4 +125,9 @@ public class CategoryService {
             throw new IllegalArgumentException();
         }
     }
+
+    public List<CategoryDto> findAllCategoryByNovelId(Long novelId) {
+        return categoryRepository.findAllCategoryByNovelId(novelId)
+                .stream().map(this::getCategoryDto).collect(Collectors.toList());
+    }
 }
