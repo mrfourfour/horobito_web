@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("book-mark")
+@RequestMapping("/book-mark")
 public class BookMarkManagerController {
 
     private final BookMarkManagerService bookMarkManagerService;
